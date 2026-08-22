@@ -1,0 +1,29 @@
+body {
+    display: flex;
+    flex-direction: column; /* Apila el contenido de arriba hacia abajo */
+    justify-content: center; /* Centra verticalmente */
+    align-items: center;     /* Centra horizontalmente */
+    min-height: 100vh;
+    margin: 0;
+    background: #e8ccad;
+}
+
+h1 {
+    margin: 20px; /* Margen superior e inferior del titulo */
+    color: rgb(118, 123, 57);
+    font-family: 'Playfair Display', Georgia, serif; /* tipografia titulo */
+    font-size: 7vw; /* Tamaño de fuente */
+}
+
+p {
+    margin: 0; /* Margen superior e inferior del parrafo */
+    width: min(100%, 55rem); /* Ancho máximo del parrafo (del 100% de la ventana usa 55rem) */
+    padding: 1.5rem 1.75rem; /* Espaciado interno de la caja respecto al texto */
+    color: black; /* Color del texto */
+    background: white; /* Fondo del parrafo */
+    border: 3px solid #767b39; /* Borde del parrafo */
+    border-radius: 18px; /* Esquinas redondeadas */
+    font-size: 1.35rem; /* Tamaño de fuente */
+    line-height: 1.75; /* Espaciado entre líneas */
+}
+
