@@ -41,9 +41,31 @@ SELECT id, name
 FROM category
 ORDER BY name;
 
+-- name: UpdateCategory :exec
+UPDATE category
+SET name = $2
+WHERE id = $1;
+
 -- name: DeleteCategory :exec
 DELETE FROM category
 WHERE id = $1;
+
+-- name: ListUserPreferences :many
+SELECT c.id, c.name
+FROM category c
+JOIN user_preference up ON c.id = up.category_id
+WHERE up.user_id = $1
+ORDER BY c.name;
+
+-- name: UpdateUserPreferences :exec
+WITH deleted AS (
+    DELETE FROM user_preference
+    WHERE user_id = $1
+)
+INSERT INTO user_preference (user_id, category_id)
+SELECT $1, category_id
+FROM unnest($2::int[]) AS category_id
+ON CONFLICT (user_id, category_id) DO NOTHING;
 
 -- name: AddUserPreference :exec
 INSERT INTO user_preference (user_id, category_id)
@@ -102,3 +124,14 @@ WHERE ec.event_id = $1;
 -- name: RemoveEventCategory :exec
 DELETE FROM event_category
 WHERE event_id = $1 AND category_id = $2;
+
+-- name: ListEventCategories :many
+SELECT c.id, c.name
+FROM category c
+JOIN event_category ec ON c.id = ec.category_id
+WHERE ec.event_id = $1
+ORDER BY c.name;
+
+-- name: DeleteEventCategories :exec
+DELETE FROM event_category
+WHERE event_id = $1;
