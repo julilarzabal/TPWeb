@@ -1,0 +1,16 @@
+services:
+  database:
+    image: postgres:15
+    container_name: postgres-tpe
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: u
+      POSTGRES_PASSWORD: p
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/schema/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+
+volumes:
+  pgdata:
