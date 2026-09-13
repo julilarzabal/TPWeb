@@ -12,6 +12,7 @@ test:
 
 # 1. Tareas previas
 pre-test:
+	@sudo apt update && sudo apt install -y docker-compose-v2
 	@echo "=== [1/3] Limpiando contenedores y volúmenes previos ==="
 	@sudo docker compose down -v
 	@echo "=== Generando código Go con sqlc ==="
