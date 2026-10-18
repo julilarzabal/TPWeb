@@ -8,7 +8,7 @@ import (
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 )
 
-// HANDLERS USER_PREFERENCES
+//HANDLERS USER_PREFERENCES
 // POST /user-preferences
 // Propósito: Crea un nuevo registro en la tabla intermedia vinculando un usuario con una categoría.
 func (s *Server) AddUserPreference(w http.ResponseWriter, r *http.Request) {
@@ -17,20 +17,24 @@ func (s *Server) AddUserPreference(w http.ResponseWriter, r *http.Request) {
 		CategoryID int32 `json:"category_id"`
 	}
 
+	// Decodifica el cuerpo de la petición HTTP hacia la estructura de datos.
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, "Error al decodificar la carga útil (JSON)", http.StatusBadRequest)
 		return
 	}
 
+	// Invoca la capa de acceso a datos generada por sqlc para persistir la relación.
 	err := s.queries.AddUserPreference(r.Context(), sqlc.AddUserPreferenceParams{
 		UserID:     input.UserID,
 		CategoryID: input.CategoryID,
 	})
+	
 	if err != nil {
 		http.Error(w, "Error de persistencia en la base de datos", http.StatusInternalServerError)
 		return
 	}
 
+	// Retorna el código de estado HTTP 201 indicando la creación exitosa del recurso.
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(`{"message": "Preferencia guardada con éxito"}`))
 }
@@ -38,6 +42,7 @@ func (s *Server) AddUserPreference(w http.ResponseWriter, r *http.Request) {
 // GET /user-preferences/{user_id}
 // Propósito: Obtiene y retorna todas las categorías asociadas a un identificador de usuario específico.
 func (s *Server) ListUserPreferences(w http.ResponseWriter, r *http.Request) {
+	// Extrae y convierte el parámetro de la ruta a un tipo de dato numérico.
 	userIdStr := r.PathValue("user_id")
 	userId, err := strconv.ParseInt(userIdStr, 10, 32)
 	if err != nil {
@@ -45,16 +50,19 @@ func (s *Server) ListUserPreferences(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Ejecuta la consulta de selección mediante la instancia de sqlc.
 	preferences, err := s.queries.ListUserPreferences(r.Context(), int32(userId))
 	if err != nil {
 		http.Error(w, "Error al consultar las preferencias", http.StatusInternalServerError)
 		return
 	}
 
+	// Previene la serialización de un valor nulo devolviendo una estructura vacía si no hay registros.
 	if preferences == nil {
-		preferences = []sqlc.Category{}
+		preferences = []sqlc.Category{} 
 	}
-
+	
+	// Establece las cabeceras correspondientes y serializa la respuesta.
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(preferences)
 }
@@ -77,9 +85,10 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Ejecuta la transacción de actualización masiva definida en la capa de datos.
 	err = s.queries.UpdateUserPreferences(r.Context(), sqlc.UpdateUserPreferencesParams{
 		UserID:  int32(userId),
-		Column2: input.CategoryIDs,
+		Column2: input.CategoryIDs, 
 	})
 	if err != nil {
 		http.Error(w, "Error al actualizar la colección de preferencias", http.StatusInternalServerError)
@@ -93,6 +102,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 // DELETE /user-preferences/{user_id}/{category_id}
 // Propósito: Elimina un registro específico en la tabla intermedia dados ambos identificadores.
 func (s *Server) RemoveUserPreference(w http.ResponseWriter, r *http.Request) {
+	// Extrae secuencialmente ambos parámetros requeridos de la URI.
 	userIdStr := r.PathValue("user_id")
 	catIdStr := r.PathValue("category_id")
 
@@ -104,14 +114,20 @@ func (s *Server) RemoveUserPreference(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Ejecuta la sentencia de eliminación mediante sqlc.
 	err := s.queries.RemoveUserPreference(r.Context(), sqlc.RemoveUserPreferenceParams{
 		UserID:     int32(userId),
 		CategoryID: int32(catId),
 	})
+	
 	if err != nil {
 		http.Error(w, "Error de eliminación en la base de datos", http.StatusInternalServerError)
 		return
 	}
+
+	// Retorna el código de estado HTTP 204 indicando éxito sin contenido en el cuerpo.
+	w.WriteHeader(http.StatusNoContent)
+}
 
 	w.WriteHeader(http.StatusNoContent)
 }
