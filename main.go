@@ -230,7 +230,6 @@ func (s *Server) DeleteEventHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-
 //HANDLERS DE CATEGORY
 
 // POST /categories: Crea una categoría nueva
@@ -299,7 +298,7 @@ func (s *Server) GetCategory(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// Cumplimos la consigna: Si no existe, devolvemos error 404
-			http.Error(w, "Categoría no encontrada", http.StatusNotFound) 
+			http.Error(w, "Categoría no encontrada", http.StatusNotFound)
 			return
 		}
 		http.Error(w, "Error en la base de datos", http.StatusInternalServerError)
@@ -340,7 +339,7 @@ func (s *Server) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		ID:   int32(id),
 		Name: input.Name,
 	})
-	
+
 	if err != nil {
 		http.Error(w, "Error al actualizar la categoría", http.StatusInternalServerError)
 		return
@@ -369,7 +368,151 @@ func (s *Server) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Cumplimos la consigna: Devolver estado 204 (No Content)
-	w.WriteHeader(http.StatusNoContent) 
+	w.WriteHeader(http.StatusNoContent)
+}
+
+/*
+Dado que event_category representa una relación entre un Evento y una Categoría,
+los endpoints REST usualmente se diseñan como sub-recursos de /events/{id}/categories.
+*/
+
+// En este handler, obtenemos el event_id desde la URL y el category_id desde el cuerpo JSON de la petición.
+func (s *Server) AddEventCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	// 1. Obtener el ID del evento desde la URL
+	eventIDStr := r.PathValue("id")
+	eventID, err := strconv.Atoi(eventIDStr) // Convertir el ID a entero
+	if err != nil || eventID <= 0 {
+		http.Error(w, "ID de evento inválido", http.StatusBadRequest)
+		return
+	}
+
+	// 2. Leer el cuerpo JSON que contiene el category_id
+	var req struct {
+		CategoryID int32 `json:"category_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "JSON inválido", http.StatusBadRequest)
+		return
+	}
+
+	// 3. Validar que el category_id sea válido
+	if req.CategoryID <= 0 {
+		http.Error(w, "El category_id es obligatorio y debe ser mayor a 0", http.StatusBadRequest)
+		return
+	}
+
+	// 4. Ejecutar la consulta de sqlc
+	/*
+		s.queries.AddEventCategory: Llama a la función generada por sqlc para asociar una categoría a un evento.
+		r.Context(): Pasa el contexto de la solicitud HTTP.
+		db.AddEventCategoryParams{...}: Parámetros para la consulta.
+	*/
+	err = s.queries.AddEventCategory(r.Context(), db.AddEventCategoryParams{
+		EventID:    int32(eventID),
+		CategoryID: req.CategoryID,
+	})
+	if err != nil {
+		http.Error(w, "Error al asociar la categoría al evento", http.StatusInternalServerError)
+		return
+	}
+
+	// 5. Responder con estado 201 Created
+	w.WriteHeader(http.StatusCreated)
+}
+
+func (s *Server) ListEventCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	// 1. Obtener el ID del evento desde la URL
+	eventIDStr := r.PathValue("id")
+	eventID, err := strconv.Atoi(eventIDStr) // Convertir el ID a entero
+	if err != nil || eventID <= 0 {
+		http.Error(w, "ID de evento inválido", http.StatusBadRequest)
+		return
+	}
+
+	// 2. Ejecutar la consulta de sqlc
+	/*
+		s.queries.ListEventCategories: Llama a la función generada por sqlc para obtener las categorías de un evento específico.
+		r.Context(): Pasa el contexto de la solicitud HTTP.
+		int32(eventID): ID del evento del cual se quieren obtener las categorías.
+	*/
+	categories, err := s.queries.ListEventCategories(r.Context(), int32(eventID))
+	if err != nil {
+		http.Error(w, "Error al consultar las categorías del evento", http.StatusInternalServerError)
+		return
+	}
+
+	// Evitar devolver null en JSON si no hay categorías asociadas
+	if categories == nil {
+		categories = []db.Category{}
+	}
+
+	// 3. Responder con JSON
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(categories)
+}
+
+// Recibe ambos IDs por la URL ({id} para el evento y {category_id} para la categoría) y elimina únicamente ese vínculo usando RemoveEventCategory.
+func (s *Server) RemoveEventCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	// 1. Obtener los IDs de la URL
+	// ID del evento
+	eventIDStr := r.PathValue("id")
+	eventID, err := strconv.Atoi(eventIDStr) // Convertir el ID a entero
+	if err != nil || eventID <= 0 {
+		http.Error(w, "ID de evento inválido", http.StatusBadRequest)
+		return
+	}
+
+	// ID de la categoría
+	categoryIDStr := r.PathValue("category_id")
+	categoryID, err := strconv.Atoi(categoryIDStr)
+	if err != nil || categoryID <= 0 {
+		http.Error(w, "ID de categoría inválido", http.StatusBadRequest)
+		return
+	}
+
+	// 2. Ejecutar el borrado en la base de datos con sqlc
+	/*
+		s.queries.RemoveEventCategory: Llama a la función generada por sqlc para remover una categoría de un evento específico.
+		r.Context(): Pasa el contexto de la solicitud HTTP.
+		db.RemoveEventCategoryParams{...}: Parámetros para la consulta.
+	*/
+	err = s.queries.RemoveEventCategory(r.Context(), db.RemoveEventCategoryParams{
+		EventID:    int32(eventID),
+		CategoryID: int32(categoryID),
+	})
+	if err != nil {
+		http.Error(w, "Error al remover la categoría del evento", http.StatusInternalServerError)
+		return
+	}
+
+	// 3. Responder con 204 No Content
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Utiliza la consulta DeleteEventCategories para desvincular todas las categorías de un evento a la vez
+func (s *Server) DeleteEventCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	// 1. Obtener ID del evento
+	eventIDStr := r.PathValue("id")
+	eventID, err := strconv.Atoi(eventIDStr) // Convertir el ID a entero
+	if err != nil || eventID <= 0 {
+		http.Error(w, "ID de evento inválido", http.StatusBadRequest)
+		return
+	}
+
+	// 2. Ejecutar borrado masivo en sqlc
+	/*
+		s.queries.DeleteEventCategories: Llama a la función generada por sqlc para eliminar todas las categorías de un evento específico.
+		r.Context(): Pasa el contexto de la solicitud HTTP.
+		int32(eventID): ID del evento del cual se quieren eliminar las categorías.
+	*/
+	err = s.queries.DeleteEventCategories(r.Context(), int32(eventID))
+	if err != nil {
+		http.Error(w, "Error al eliminar las categorías del evento", http.StatusInternalServerError)
+		return
+	}
+
+	// 3. Responder con 204 No Content
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func main() {
@@ -403,11 +546,17 @@ func main() {
 	mux.HandleFunc("DELETE /categories/{id}", server.DeleteCategory)
 	
 	mux.HandleFunc("/", server.homeHandler)
-	mux.HandleFunc("/events", server.CreateEventHandler)
-	mux.HandleFunc("/events", server.ListEventsHandler)
-	mux.HandleFunc("/events/{id}", server.GetEventHandler)
-	mux.HandleFunc("/events/{id}", server.UpdateEventHandler)
-	mux.HandleFunc("/events/{id}", server.DeleteEventHandler)
+	// Rutas para event
+	mux.HandleFunc("POST /events", server.CreateEventHandler)
+	mux.HandleFunc("GET /events", server.ListEventsHandler)
+	mux.HandleFunc("GET /events/{id}", server.GetEventHandler)
+	mux.HandleFunc("PUT /events/{id}", server.UpdateEventHandler)
+	mux.HandleFunc("DELETE /events/{id}", server.DeleteEventHandler)
+	// Rutas para event_category
+	mux.HandleFunc("POST /events/{id}/categories", server.AddEventCategoryHandler)
+	mux.HandleFunc("GET /events/{id}/categories", server.ListEventCategoriesHandler)
+	mux.HandleFunc("DELETE /events/{id}/categories/{category_id}", server.RemoveEventCategoryHandler)
+	mux.HandleFunc("DELETE /events/{id}/categories", server.DeleteEventCategoriesHandler)
 	mux.Handle("/style.css", http.FileServer(http.Dir(".")))
 
 	fmt.Println("Servidor iniciado en http://localhost:8080/")
