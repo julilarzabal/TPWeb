@@ -28,7 +28,11 @@ func (s *Server) AddUserPreference(w http.ResponseWriter, r *http.Request) {
 		UserID:     input.UserID,
 		CategoryID: input.CategoryID,
 	})
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> e2e71c7 (Enhance category and event handlers with detailed comments and validation checks; update main.go for improved route organization.)
 	if err != nil {
 		http.Error(w, "Error de persistencia en la base de datos", http.StatusInternalServerError)
 		return
@@ -61,7 +65,6 @@ func (s *Server) ListUserPreferences(w http.ResponseWriter, r *http.Request) {
 	if preferences == nil {
 		preferences = []sqlc.Category{} 
 	}
-	
 	// Establece las cabeceras correspondientes y serializa la respuesta.
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(preferences)
@@ -119,15 +122,22 @@ func (s *Server) RemoveUserPreference(w http.ResponseWriter, r *http.Request) {
 		UserID:     int32(userId),
 		CategoryID: int32(catId),
 	})
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> e2e71c7 (Enhance category and event handlers with detailed comments and validation checks; update main.go for improved route organization.)
 	if err != nil {
 		http.Error(w, "Error de eliminación en la base de datos", http.StatusInternalServerError)
 		return
 	}
 
 	// Retorna el código de estado HTTP 204 indicando éxito sin contenido en el cuerpo.
+<<<<<<< HEAD
 	w.WriteHeader(http.StatusNoContent)
 }
 
+=======
+>>>>>>> e2e71c7 (Enhance category and event handlers with detailed comments and validation checks; update main.go for improved route organization.)
 	w.WriteHeader(http.StatusNoContent)
 }

@@ -30,7 +30,7 @@ func (s *Server) homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Establecer la conexión a la base de datos
-	connStr := "user=u ****** dbname=postgres host=localhost port=5432 sslmode=disable"
+	connStr := "user=u password=p dbname=postgres host=localhost port=5432 sslmode=disable"
 	db, err := sql.Open("pgx", connStr)
 	if err != nil {
 		log.Fatalf("failed to connect to the database: %v", err)
@@ -60,7 +60,7 @@ func main() {
 	mux.HandleFunc("GET /categories/{id}", server.GetCategory)
 	mux.HandleFunc("PUT /categories/{id}", server.UpdateCategory)
 	mux.HandleFunc("DELETE /categories/{id}", server.DeleteCategory)
-	// Rutas para user_preferences
+	//Rutas para user_preferences
 	mux.HandleFunc("POST /user-preferences", server.AddUserPreference)
 	mux.HandleFunc("GET /user-preferences/{user_id}", server.ListUserPreferences)
 	mux.HandleFunc("PUT /user-preferences/{user_id}", server.UpdateUserPreferences)
@@ -71,7 +71,7 @@ func main() {
 	mux.HandleFunc("GET /events/{id}", server.GetEventHandler)
 	mux.HandleFunc("PUT /events/{id}", server.UpdateEventHandler)
 	mux.HandleFunc("DELETE /events/{id}", server.DeleteEventHandler)
-	// Rutas para user
+	//Rutas para user
 	mux.HandleFunc("POST /users", server.createUser)
 	mux.HandleFunc("GET /users", server.listUsers)
 	mux.HandleFunc("GET /users/{id}", server.getUser)
@@ -82,7 +82,6 @@ func main() {
 	mux.HandleFunc("GET /events/{id}/categories", server.ListEventCategoriesHandler)
 	mux.HandleFunc("DELETE /events/{id}/categories/{category_id}", server.RemoveEventCategoryHandler)
 	mux.HandleFunc("DELETE /events/{id}/categories", server.DeleteEventCategoriesHandler)
-
 	mux.Handle("/style.css", http.FileServer(http.Dir(".")))
 
 	fmt.Println("Servidor iniciado en http://localhost:8080/")
