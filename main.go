@@ -31,6 +31,8 @@ func (s *Server) homeHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "index.html")
 }
 
+// HANDLERS DE EVENT
+
 func (s *Server) CreateEventHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. Estructura para recibir el cuerpo JSON de la petición
 	/*
@@ -230,7 +232,7 @@ func (s *Server) DeleteEventHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-//HANDLERS DE CATEGORY
+// HANDLERS DE CATEGORY
 
 // POST /categories: Crea una categoría nueva
 func (s *Server) CreateCategory(w http.ResponseWriter, r *http.Request) {
@@ -370,6 +372,8 @@ func (s *Server) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	// Cumplimos la consigna: Devolver estado 204 (No Content)
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// HANDLERS DE EVENT_CATEGORY
 
 /*
 Dado que event_category representa una relación entre un Evento y una Categoría,
@@ -538,14 +542,15 @@ func main() {
 
 	// Configurar rutas utilizando las funciones del Server
 	mux := http.NewServeMux()
-	//CATEGORIES
-    mux.HandleFunc("POST /categories", server.CreateCategory)
+
+	mux.HandleFunc("/", server.homeHandler)
+
+	// Rutas para category
+	mux.HandleFunc("POST /categories", server.CreateCategory)
 	mux.HandleFunc("GET /categories", server.ListCategories)
 	mux.HandleFunc("GET /categories/{id}", server.GetCategory)
 	mux.HandleFunc("PUT /categories/{id}", server.UpdateCategory)
 	mux.HandleFunc("DELETE /categories/{id}", server.DeleteCategory)
-	
-	mux.HandleFunc("/", server.homeHandler)
 	// Rutas para event
 	mux.HandleFunc("POST /events", server.CreateEventHandler)
 	mux.HandleFunc("GET /events", server.ListEventsHandler)
