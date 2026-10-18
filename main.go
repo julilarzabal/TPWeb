@@ -557,6 +557,12 @@ func main() {
 	mux.HandleFunc("GET /events/{id}", server.GetEventHandler)
 	mux.HandleFunc("PUT /events/{id}", server.UpdateEventHandler)
 	mux.HandleFunc("DELETE /events/{id}", server.DeleteEventHandler)
+	//Rutas para user
+	mux.HandleFunc("POST /users", server.createUser)
+	mux.HandleFunc("GET /users", server.listUsers)
+	mux.HandleFunc("GET /users/{id}", server.getUser)
+	mux.HandleFunc("PUT /users/{id}", server.updateUser)
+	mux.HandleFunc("DELETE /users/{id}", server.deleteUser)
 	// Rutas para event_category
 	mux.HandleFunc("POST /events/{id}/categories", server.AddEventCategoryHandler)
 	mux.HandleFunc("GET /events/{id}/categories", server.ListEventCategoriesHandler)
