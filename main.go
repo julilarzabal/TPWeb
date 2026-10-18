@@ -11,7 +11,13 @@ import (
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 )
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+// Server actúa como contenedor de las dependencias necesarias para los handlers
+// Decidimos utilizarlo para permitir que luego sea escalable y podamos agregar más dependencias si es necesario.
+type Server struct {
+	queries *sqlc.Queries
+}
+
+func (s *Server) homeHandler(w http.ResponseWriter, r *http.Request) {
 	// Validar que sea la ruta exacta "/" (para el 404)
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
@@ -39,18 +45,16 @@ func main() {
 	// Crear la instancia del repositorio generado por sqlc
 	queries := sqlc.New(db)
 
-	// A partir de aquí, le pasas 'queries' a tus handlers HTTP
+	server := &Server{
+		queries: queries,
+	}
 
-	/*
-		Una vez creada la variable queries, se la pasas a los handlers de tu API
-		(por ejemplo, guardándola dentro de una estructura Server o enviándola mediante un closure / dependency injection).
-		Así, cuando llegue una petición POST /entidades,
-		tu handler podrá invocar directamente queries.CreateEntidad(...) para guardar el registro en la base de datos.
-	*/
+	// Configurar rutas utilizando las funciones del Server
+	mux := http.NewServeMux()
 
-	http.HandleFunc("/", homeHandler)
-	http.Handle("/style.css", http.FileServer(http.Dir(".")))
+	mux.HandleFunc("/", server.homeHandler)
+	mux.Handle("/style.css", http.FileServer(http.Dir(".")))
 
 	fmt.Println("Servidor iniciado en http://localhost:8080/")
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", mux)
 }
