@@ -8,7 +8,7 @@ import (
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 )
 
-//HANDLERS USER_PREFERENCES
+// HANDLERS USER_PREFERENCES
 // POST /user-preferences
 // Propósito: Crea un nuevo registro en la tabla intermedia vinculando un usuario con una categoría.
 func (s *Server) AddUserPreference(w http.ResponseWriter, r *http.Request) {
@@ -28,11 +28,6 @@ func (s *Server) AddUserPreference(w http.ResponseWriter, r *http.Request) {
 		UserID:     input.UserID,
 		CategoryID: input.CategoryID,
 	})
-<<<<<<< HEAD
-	
-=======
-
->>>>>>> e2e71c7 (Enhance category and event handlers with detailed comments and validation checks; update main.go for improved route organization.)
 	if err != nil {
 		http.Error(w, "Error de persistencia en la base de datos", http.StatusInternalServerError)
 		return
@@ -63,7 +58,7 @@ func (s *Server) ListUserPreferences(w http.ResponseWriter, r *http.Request) {
 
 	// Previene la serialización de un valor nulo devolviendo una estructura vacía si no hay registros.
 	if preferences == nil {
-		preferences = []sqlc.Category{} 
+		preferences = []sqlc.Category{}
 	}
 	// Establece las cabeceras correspondientes y serializa la respuesta.
 	w.Header().Set("Content-Type", "application/json")
@@ -91,7 +86,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	// Ejecuta la transacción de actualización masiva definida en la capa de datos.
 	err = s.queries.UpdateUserPreferences(r.Context(), sqlc.UpdateUserPreferencesParams{
 		UserID:  int32(userId),
-		Column2: input.CategoryIDs, 
+		Column2: input.CategoryIDs,
 	})
 	if err != nil {
 		http.Error(w, "Error al actualizar la colección de preferencias", http.StatusInternalServerError)
@@ -122,22 +117,11 @@ func (s *Server) RemoveUserPreference(w http.ResponseWriter, r *http.Request) {
 		UserID:     int32(userId),
 		CategoryID: int32(catId),
 	})
-<<<<<<< HEAD
-	
-=======
-
->>>>>>> e2e71c7 (Enhance category and event handlers with detailed comments and validation checks; update main.go for improved route organization.)
 	if err != nil {
 		http.Error(w, "Error de eliminación en la base de datos", http.StatusInternalServerError)
 		return
 	}
 
 	// Retorna el código de estado HTTP 204 indicando éxito sin contenido en el cuerpo.
-<<<<<<< HEAD
-	w.WriteHeader(http.StatusNoContent)
-}
-
-=======
->>>>>>> e2e71c7 (Enhance category and event handlers with detailed comments and validation checks; update main.go for improved route organization.)
 	w.WriteHeader(http.StatusNoContent)
 }

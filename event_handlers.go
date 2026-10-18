@@ -48,7 +48,7 @@ func (s *Server) CreateEventHandler(w http.ResponseWriter, r *http.Request) {
 	*/
 	event, err := s.queries.CreateEvent(r.Context(), sqlc.CreateEventParams{
 		Title:       req.Title,
-		Description: req.Description,
+		Description: sql.NullString{String: req.Description, Valid: req.Description != ""},
 		Location:    req.Location,
 		AgeRange:    req.AgeRange,
 		UserID:      req.UserID,
@@ -168,7 +168,7 @@ func (s *Server) UpdateEventHandler(w http.ResponseWriter, r *http.Request) {
 	err = s.queries.UpdateEvent(r.Context(), sqlc.UpdateEventParams{
 		ID:          int32(id),
 		Title:       req.Title,
-		Description: req.Description,
+		Description: sql.NullString{String: req.Description, Valid: req.Description != ""},
 		Location:    req.Location,
 		AgeRange:    req.AgeRange,
 		UserID:      req.UserID,

@@ -28,21 +28,18 @@ type UpdateUserRequest struct {
 	Role     string `json:"role"`
 }
 
-//sirve porque definimos estructuras intermedias (DTOs) que reciban los datos en formato de texto plano (strings)
-//  No exponemos db.User directamente porque sql.NullString / sql.NullTime se serializan como {"String":"x","Valid":true}
-
 // Handler para crear un nuevo usuario
 func (s *Server) createUser(w http.ResponseWriter, r *http.Request) {
 	// 1. Decodificar el JSON recibido en la petición
 	var req CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		s.respondWithError(w, http.StatusBadRequest, "JSON de entrada inválido")
+		http.Error(w, "JSON de entrada inválido", http.StatusBadRequest)
 		return
 	}
 
 	// 2. Validación de regla de negocio
 	if req.Name == "" || req.Email == "" || req.Role == "" {
-		s.respondWithError(w, http.StatusBadRequest, "Los campos 'name', 'email' y 'role' son obligatorios")
+		http.Error(w, "Los campos 'name', 'email' y 'role' son obligatorios", http.StatusBadRequest)
 		return
 	}
 
@@ -69,19 +66,21 @@ func (s *Server) createUser(w http.ResponseWriter, r *http.Request) {
 		Role:     req.Role,
 	})
 	if err != nil {
-		s.respondWithError(w, http.StatusInternalServerError, "Error al guardar el usuario en la base de datos")
+		http.Error(w, "Error al guardar el usuario en la base de datos", http.StatusInternalServerError)
 		return
 	}
 
 	// 5. Responder con estado 201 Created y el usuario recién creado
-	s.respondWithJSON(w, http.StatusCreated, user)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(user)
 }
 
-// handler para listar los usuarios
+// Handler para listar los usuarios
 func (s *Server) listUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := s.queries.ListUsers(r.Context())
 	if err != nil {
-		s.respondWithError(w, http.StatusInternalServerError, "Error al consultar la lista de usuarios")
+		http.Error(w, "Error al consultar la lista de usuarios", http.StatusInternalServerError)
 		return
 	}
 
@@ -90,16 +89,17 @@ func (s *Server) listUsers(w http.ResponseWriter, r *http.Request) {
 		users = []sqlc.User{}
 	}
 
-	s.respondWithJSON(w, http.StatusOK, users)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(users)
 }
 
-// handler para obtener un usuario por ID
+// Handler para obtener un usuario por ID
 func (s *Server) getUser(w http.ResponseWriter, r *http.Request) {
 	// 1. Obtener el ID de la URL
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		s.respondWithError(w, http.StatusBadRequest, "El ID de usuario debe ser un número entero válido")
+		http.Error(w, "El ID de usuario debe ser un número entero válido", http.StatusBadRequest)
 		return
 	}
 
@@ -107,33 +107,34 @@ func (s *Server) getUser(w http.ResponseWriter, r *http.Request) {
 	user, err := s.queries.GetUser(r.Context(), int32(id))
 	if err != nil {
 		if err == sql.ErrNoRows {
-			s.respondWithError(w, http.StatusNotFound, "Usuario no encontrado")
+			http.Error(w, "Usuario no encontrado", http.StatusNotFound)
 			return
 		}
-		s.respondWithError(w, http.StatusInternalServerError, "Error en el servidor al buscar el usuario")
+		http.Error(w, "Error en el servidor al buscar el usuario", http.StatusInternalServerError)
 		return
 	}
 
-	s.respondWithJSON(w, http.StatusOK, user)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }
 
-// handler para actualizar un usuario
+// Handler para actualizar un usuario
 func (s *Server) updateUser(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		s.respondWithError(w, http.StatusBadRequest, "El ID de usuario debe ser un número entero válido")
+		http.Error(w, "El ID de usuario debe ser un número entero válido", http.StatusBadRequest)
 		return
 	}
 
 	var req UpdateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		s.respondWithError(w, http.StatusBadRequest, "JSON de entrada inválido")
+		http.Error(w, "JSON de entrada inválido", http.StatusBadRequest)
 		return
 	}
 
 	if req.Name == "" || req.Email == "" || req.Role == "" {
-		s.respondWithError(w, http.StatusBadRequest, "Los campos 'name', 'email' y 'role' son obligatorios")
+		http.Error(w, "Los campos 'name', 'email' y 'role' son obligatorios", http.StatusBadRequest)
 		return
 	}
 
@@ -160,50 +161,37 @@ func (s *Server) updateUser(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		if err == sql.ErrNoRows {
-			s.respondWithError(w, http.StatusNotFound, "Usuario no encontrado")
+			http.Error(w, "Usuario no encontrado", http.StatusNotFound)
 			return
 		}
-		s.respondWithError(w, http.StatusInternalServerError, "Error al actualizar el usuario")
+		http.Error(w, "Error al actualizar el usuario", http.StatusInternalServerError)
 		return
 	}
 
-	// Devolver el objeto actualizado
 	updatedUser, _ := s.queries.GetUser(r.Context(), int32(id))
-	s.respondWithJSON(w, http.StatusOK, updatedUser)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(updatedUser)
 }
 
-// handler para eliminar un usuario por id
+// Handler para eliminar un usuario por id
 func (s *Server) deleteUser(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		s.respondWithError(w, http.StatusBadRequest, "El ID de usuario debe ser un número entero válido")
+		http.Error(w, "El ID de usuario debe ser un número entero válido", http.StatusBadRequest)
 		return
 	}
 
 	err = s.queries.DeleteUser(r.Context(), int32(id))
 	if err != nil {
 		if err == sql.ErrNoRows {
-			s.respondWithError(w, http.StatusNotFound, "Usuario no encontrado")
+			http.Error(w, "Usuario no encontrado", http.StatusNotFound)
 			return
 		}
-		s.respondWithError(w, http.StatusInternalServerError, "Error al eliminar el usuario")
+		http.Error(w, "Error al eliminar el usuario", http.StatusInternalServerError)
 		return
 	}
 
-	// 204 No Content indica que la acción fue exitosa y no hay contenido para retornar
+	// 204 No Content indica éxito sin cuerpo
 	w.WriteHeader(http.StatusNoContent)
 }
-
-// Métodos auxiliares de Server para responder en formato JSON
-func (s *Server) respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(payload)
-}
-
-func (s *Server) respondWithError(w http.ResponseWriter, code int, message string) {
-	s.respondWithJSON(w, code, map[string]string{"error": message})
-}
-
-// REVISAR EL TIPO DE RESPUESTA QUE DEVUELVE, EL FORMATO ES DISTINTO EN LO DE EVENT Y ESTO (aca uso respondWWithJSON, en lo de event SE USA json.NewEncoder(w).Encode(event))
