@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 )
 
 // DTO para recibir el JSON en POST /users
