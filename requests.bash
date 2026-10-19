@@ -77,12 +77,12 @@ curl -i -X POST http://localhost:8080/events \
 
 echo -e "\n"
 
-echo "=== 7. POST /events/6/categories - Agregando una categoría a un evento ==="
+echo "=== 7. POST /events/1/categories - Agregando una categoría a un evento ==="
 
 curl -i -X POST http://localhost:8080/events/6/categories \
   -H "Content-Type: application/json" \
   -d '{
-    "category_id": 17
+    "category_id": 2
   }'
 
 echo -e "\n"
