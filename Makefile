@@ -12,7 +12,6 @@ test:
 
 # 1. Tareas previas
 pre-test:
-	@sudo apt update && sudo apt install -y docker-compose-v2
 	@echo "=== [1/3] Limpiando contenedores y volúmenes previos ==="
 	@sudo docker compose down -v
 	@echo "=== Generando código Go con sqlc ==="
@@ -26,11 +25,13 @@ pre-test:
 		sleep 1; \
 	done
 	@echo "Base de datos lista."
+	@go run .
 
-# 2. Ejecución de tests
+# 2. Ejecución de pruebas de los endpoints
 run-tests:
-	@echo "=== [2/3] Ejecutando Tests ==="
-	@go test -v ./...
+	@echo "=== [2/3]  Prueba de cada uno de los endpoints ==="
+	@chmod +x requests.bash
+	@./requests.bash
 
 # 3. Tareas posteriores
 post-test:
