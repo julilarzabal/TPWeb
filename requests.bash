@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "=== Creando un nuevo usuario ==="
+echo "=== 1. POST /users - Creando un nuevo usuario ==="
 
 # -i : permite que la terminal te muestre las cabeceras de respuesta que devuelve tu servidor, para verificar fácilmente el código de estado
 
@@ -17,7 +17,7 @@ curl -i -X POST http://localhost:8080/users \
 echo -e "\n"
 
 
-echo "=== Creando un nuevo usuario sin nombre ==="
+echo "=== 2. POST /users - Creando un nuevo usuario sin nombre ==="
 
 curl -i -X POST http://localhost:8080/users \
   -H "Content-Type: application/json" \
@@ -31,7 +31,7 @@ curl -i -X POST http://localhost:8080/users \
 
 echo -e "\n"
 
-echo "=== Creando un nueva categoría ==="
+echo "=== 3. POST /categories - Creando un nueva categoría ==="
 
 curl -i -X POST http://localhost:8080/categories \
   -H "Content-Type: application/json" \
@@ -41,7 +41,7 @@ curl -i -X POST http://localhost:8080/categories \
 
 echo -e "\n"
 
-echo "=== Creando un nueva categoría ==="
+echo "=== 4. POST /categories - Creando un nueva categoría ==="
 
 curl -i -X POST http://localhost:8080/categories \
   -H "Content-Type: application/json" \
@@ -51,39 +51,65 @@ curl -i -X POST http://localhost:8080/categories \
 
 echo -e "\n"
 
-echo "=== Creando un nueva preferencia de usuario ==="
+echo "=== 5. POST /user-preferences - Creando un nueva preferencia de usuario ==="
 
-curl -i -X POST http://localhost:8080/users/1/preferences \
+curl -i -X POST http://localhost:8080/user-preferences \
   -H "Content-Type: application/json" \
   -d '{
-    "category_ids": [2]
+    "user_id": 1,
+    "category_id": 2
   }'
 
 echo -e "\n"
 
 
-echo "=== GET /events - Listar todos los eventos ==="
+echo "=== 6. POST /events - Creando un nuevo evento ==="
+
+curl -i -X POST http://localhost:8080/events \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Conferencia de Go y PostgreSQL",
+    "description": "Charla sobre arquitectura limpia, APIs REST y sqlc",
+    "location": "Centro de Convenciones",
+    "age_range": "18-65",
+    "user_id": 1
+  }'
+
+echo -e "\n"
+
+echo "=== 7. POST /events/6/categories - Agregando una categoría a un evento ==="
+
+curl -i -X POST http://localhost:8080/events/6/categories \
+  -H "Content-Type: application/json" \
+  -d '{
+    "category_id": 17
+  }'
+
+echo -e "\n"
+
+
+echo "=== 8. GET /events - Listar todos los eventos ==="
 
 curl -i -X GET http://localhost:8080/events
 
 echo -e "\n\n"
 
 
-echo "=== GET /users/1 - Obtener usuario existente ==="
+echo "=== 9. GET /users/1 - Obtener usuario existente ==="
 
 curl -i -X GET http://localhost:8080/users/1
 
 echo -e "\n\n"
 
 
-echo "=== GET /users/9999 - Obtener usuario inexistente ==="
+echo "=== 10. GET /users/9999 - Obtener usuario inexistente ==="
 
 curl -i -X GET http://localhost:8080/users/9999
 
 echo -e "\n\n"
 
 
-echo "=== PUT /users/1 - Actualizar usuario ==="
+echo "=== 11. PUT /users/1 - Actualizar usuario ==="
 
 curl -i -X PUT http://localhost:8080/users/1 \
   -H "Content-Type: application/json" \
@@ -98,25 +124,25 @@ curl -i -X PUT http://localhost:8080/users/1 \
 echo -e "\n\n"
 
 
-echo "=== PUT /users/1/preferences - Actualizar preferencias del usuario ==="
+echo "=== 12. PUT /users/1/preferences - Actualizar preferencias del usuario ==="
 
 curl -i -X PUT http://localhost:8080/user-preferences/1 \
   -H "Content-Type: application/json" \
   -d '{
-    "category_ids": [1]
+    "category_id": 1
   }'
 
 echo -e "\n\n"
 
 
-echo "=== DELETE /events/1/categories/2 - Eliminar una categoría de un evento ==="
+echo "=== 13. DELETE /events/1/categories/1 - Eliminar una categoría de un evento ==="
 
 curl -i -X DELETE http://localhost:8080/events/1/categories/2
 
 echo -e "\n\n"
 
 
-echo "=== DELETE /events/1/categories - Eliminar todas las categorías del evento ==="
+echo "=== 14. DELETE /events/1/categories - Eliminar todas las categorías del evento ==="
 
 curl -i -X DELETE http://localhost:8080/events/1/categories
 
