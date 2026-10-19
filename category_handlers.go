@@ -12,7 +12,7 @@ import (
 // HANDLERS DE CATEGORY
 
 // POST /categories: Crea una categoría nueva
-func (s *Server) CreateCategory(w http.ResponseWriter, r *http.Request) {
+func (s *Server) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// Definimos una estructura temporal para guardar el JSON que envía el usuario
 	var input struct {
 		Name string `json:"name"`
@@ -44,7 +44,7 @@ func (s *Server) CreateCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 // GET /categories: Trae todas las categorías
-func (s *Server) ListCategories(w http.ResponseWriter, r *http.Request) {
+func (s *Server) ListCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	// Ejecuta el SELECT de todas las categorías
 	categories, err := s.queries.ListCategories(r.Context())
 	if err != nil {
@@ -63,7 +63,7 @@ func (s *Server) ListCategories(w http.ResponseWriter, r *http.Request) {
 }
 
 // GET /categories/{id}: Trae una categoría específica
-func (s *Server) GetCategory(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// Extraemos el número que el usuario puso en la URL (ej: /categories/5)
 	idStr := r.PathValue("id")
 	id, err := strconv.ParseInt(idStr, 10, 32) // Convertimos ese texto '5' al número entero 5
@@ -89,7 +89,7 @@ func (s *Server) GetCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 // PUT /categories/{id}: Modifica una categoría
-func (s *Server) UpdateCategory(w http.ResponseWriter, r *http.Request) {
+func (s *Server) UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// Obtenemos y convertimos el ID de la URL
 	idStr := r.PathValue("id")
 	id, err := strconv.ParseInt(idStr, 10, 32)
@@ -130,7 +130,7 @@ func (s *Server) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 // DELETE /categories/{id}: Elimina una categoría
-func (s *Server) DeleteCategory(w http.ResponseWriter, r *http.Request) {
+func (s *Server) DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// Obtenemos y convertimos el ID de la URL
 	idStr := r.PathValue("id")
 	id, err := strconv.ParseInt(idStr, 10, 32)

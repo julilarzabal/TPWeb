@@ -29,7 +29,7 @@ type UpdateUserRequest struct {
 }
 
 // Handler para crear un nuevo usuario
-func (s *Server) createUser(w http.ResponseWriter, r *http.Request) {
+func (s *Server) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. Decodificar el JSON recibido en la petición
 	var req CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -77,7 +77,7 @@ func (s *Server) createUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handler para listar los usuarios
-func (s *Server) listUsers(w http.ResponseWriter, r *http.Request) {
+func (s *Server) ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 	users, err := s.queries.ListUsers(r.Context())
 	if err != nil {
 		http.Error(w, "Error al consultar la lista de usuarios", http.StatusInternalServerError)
@@ -94,7 +94,7 @@ func (s *Server) listUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handler para obtener un usuario por ID
-func (s *Server) getUser(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. Obtener el ID de la URL
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
@@ -119,7 +119,7 @@ func (s *Server) getUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handler para actualizar un usuario
-func (s *Server) updateUser(w http.ResponseWriter, r *http.Request) {
+func (s *Server) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -174,7 +174,7 @@ func (s *Server) updateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handler para eliminar un usuario por id
-func (s *Server) deleteUser(w http.ResponseWriter, r *http.Request) {
+func (s *Server) DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {

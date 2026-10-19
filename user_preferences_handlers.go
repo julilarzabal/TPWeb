@@ -11,7 +11,7 @@ import (
 // HANDLERS USER_PREFERENCES
 // POST /user-preferences
 // Propósito: Crea un nuevo registro en la tabla intermedia vinculando un usuario con una categoría.
-func (s *Server) AddUserPreference(w http.ResponseWriter, r *http.Request) {
+func (s *Server) AddUserPreferenceHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		UserID     int32 `json:"user_id"`
 		CategoryID int32 `json:"category_id"`
@@ -40,7 +40,7 @@ func (s *Server) AddUserPreference(w http.ResponseWriter, r *http.Request) {
 
 // GET /user-preferences/{user_id}
 // Propósito: Obtiene y retorna todas las categorías asociadas a un identificador de usuario específico.
-func (s *Server) ListUserPreferences(w http.ResponseWriter, r *http.Request) {
+func (s *Server) ListUserPreferencesHandler(w http.ResponseWriter, r *http.Request) {
 	// Extrae y convierte el parámetro de la ruta a un tipo de dato numérico.
 	userIdStr := r.PathValue("user_id")
 	userId, err := strconv.ParseInt(userIdStr, 10, 32)
@@ -67,7 +67,7 @@ func (s *Server) ListUserPreferences(w http.ResponseWriter, r *http.Request) {
 
 // PUT /user-preferences/{user_id}
 // Propósito: Reemplaza la totalidad de las preferencias de un usuario por un nuevo conjunto de categorías.
-func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
+func (s *Server) UpdateUserPreferencesHandler(w http.ResponseWriter, r *http.Request) {
 	userIdStr := r.PathValue("user_id")
 	userId, err := strconv.ParseInt(userIdStr, 10, 32)
 	if err != nil {
@@ -99,7 +99,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 
 // DELETE /user-preferences/{user_id}/{category_id}
 // Propósito: Elimina un registro específico en la tabla intermedia dados ambos identificadores.
-func (s *Server) RemoveUserPreference(w http.ResponseWriter, r *http.Request) {
+func (s *Server) RemoveUserPreferenceHandler(w http.ResponseWriter, r *http.Request) {
 	// Extrae secuencialmente ambos parámetros requeridos de la URI.
 	userIdStr := r.PathValue("user_id")
 	catIdStr := r.PathValue("category_id")

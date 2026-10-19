@@ -55,16 +55,16 @@ func main() {
 	mux.HandleFunc("/", server.homeHandler)
 
 	// Rutas para category
-	mux.HandleFunc("POST /categories", server.CreateCategory)
-	mux.HandleFunc("GET /categories", server.ListCategories)
-	mux.HandleFunc("GET /categories/{id}", server.GetCategory)
-	mux.HandleFunc("PUT /categories/{id}", server.UpdateCategory)
-	mux.HandleFunc("DELETE /categories/{id}", server.DeleteCategory)
+	mux.HandleFunc("POST /categories", server.CreateCategoryHandler)
+	mux.HandleFunc("GET /categories", server.ListCategoriesHandler)
+	mux.HandleFunc("GET /categories/{id}", server.GetCategoryHandler)
+	mux.HandleFunc("PUT /categories/{id}", server.UpdateCategoryHandler)
+	mux.HandleFunc("DELETE /categories/{id}", server.DeleteCategoryHandler)
 	//Rutas para user_preferences
-	mux.HandleFunc("POST /user-preferences", server.AddUserPreference)
-	mux.HandleFunc("GET /user-preferences/{user_id}", server.ListUserPreferences)
-	mux.HandleFunc("PUT /user-preferences/{user_id}", server.UpdateUserPreferences)
-	mux.HandleFunc("DELETE /user-preferences/{user_id}/{category_id}", server.RemoveUserPreference)
+	mux.HandleFunc("POST /user-preferences", server.AddUserPreferenceHandler)
+	mux.HandleFunc("GET /user-preferences/{user_id}", server.ListUserPreferencesHandler)
+	mux.HandleFunc("PUT /user-preferences/{user_id}", server.UpdateUserPreferencesHandler)
+	mux.HandleFunc("DELETE /user-preferences/{user_id}/{category_id}", server.RemoveUserPreferenceHandler)
 	// Rutas para event
 	mux.HandleFunc("POST /events", server.CreateEventHandler)
 	mux.HandleFunc("GET /events", server.ListEventsHandler)
@@ -72,11 +72,11 @@ func main() {
 	mux.HandleFunc("PUT /events/{id}", server.UpdateEventHandler)
 	mux.HandleFunc("DELETE /events/{id}", server.DeleteEventHandler)
 	//Rutas para user
-	mux.HandleFunc("POST /users", server.createUser)
-	mux.HandleFunc("GET /users", server.listUsers)
-	mux.HandleFunc("GET /users/{id}", server.getUser)
-	mux.HandleFunc("PUT /users/{id}", server.updateUser)
-	mux.HandleFunc("DELETE /users/{id}", server.deleteUser)
+	mux.HandleFunc("POST /users", server.CreateUserHandler)
+	mux.HandleFunc("GET /users", server.ListUsersHandler)
+	mux.HandleFunc("GET /users/{id}", server.GetUserHandler)
+	mux.HandleFunc("PUT /users/{id}", server.UpdateUserHandler)
+	mux.HandleFunc("DELETE /users/{id}", server.DeleteUserHandler)
 	// Rutas para event_category
 	mux.HandleFunc("POST /events/{id}/categories", server.AddEventCategoryHandler)
 	mux.HandleFunc("GET /events/{id}/categories", server.ListEventCategoriesHandler)
