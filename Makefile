@@ -25,7 +25,7 @@ pre-test:
 		sleep 1; \
 	done
 	@echo "Base de datos lista."
-	@go run .
+	@go run . > /tmp/tpe-server.log 2>&1 &
 
 # 2. Ejecución de pruebas de los endpoints
 run-tests:

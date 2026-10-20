@@ -79,7 +79,7 @@ echo -e "\n"
 
 echo "=== 7. POST /events/1/categories - Agregando una categoría a un evento ==="
 
-curl -i -X POST http://localhost:8080/events/6/categories \
+curl -i -X POST http://localhost:8080/events/1/categories \
   -H "Content-Type: application/json" \
   -d '{
     "category_id": 2
