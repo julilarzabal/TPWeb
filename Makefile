@@ -25,7 +25,12 @@ pre-test:
 		sleep 1; \
 	done
 	@echo "Base de datos lista."
-	@go run . > /tmp/tpe-server.log 2>&1 &
+	@go run . > /tmp/tpe-server.log 2>&1 & echo $$! > /tmp/tpe-server.pid
+	@echo "=== Esperando a que el servidor Go esté listo ==="
+	@until nc -z localhost 8080; do \
+		sleep 1; \
+	done
+	@echo "Servidor Go listo para recibir peticiones."
 
 # 2. Ejecución de pruebas de los endpoints
 run-tests:
@@ -37,3 +42,6 @@ run-tests:
 post-test:
 	@echo "=== [3/3] Limpiando contenedores y volúmenes ==="
 	@sudo docker compose down -v
+	@echo "=== Apagando servidor Go ==="
+	@kill $$(cat /tmp/tpe-server.pid) || true
+	@rm -f /tmp/tpe-server.pid
