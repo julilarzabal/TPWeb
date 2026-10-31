@@ -3,6 +3,8 @@ Luego de clonar el repositorio, ejecutar el siguiente comando:  _make test_
 
 Es necesario tener la siguiente herramienta: docker-compose-v2
 
+Antes de ejecutar las pruebas, configurar `.env` en la raíz con `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` y `DB_SSLMODE`. La aplicación y Docker Compose usan estas mismas variables para conectarse a PostgreSQL.
+
 ### Documentación: 
 Creamos 3 tablas principales que son: _User_, _Category_ y _Event_.
 

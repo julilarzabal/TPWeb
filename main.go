@@ -4,9 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
+	"net/url"
+	"os"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/joho/godotenv"
 
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 )
@@ -30,8 +34,21 @@ func (s *Server) homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Establecer la conexión a la base de datos
-	connStr := "user=u password=p dbname=postgres host=localhost port=5432 sslmode=disable"
-	db, err := sql.Open("pgx", connStr)
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("failed to load .env: %v", err)
+	}
+
+	connURL := url.URL{
+		Scheme: "postgres",
+		User:   url.UserPassword(requiredEnv("DB_USER"), requiredEnv("DB_PASSWORD")),
+		Host:   net.JoinHostPort(requiredEnv("DB_HOST"), requiredEnv("DB_PORT")),
+		Path:   requiredEnv("DB_NAME"),
+	}
+	query := connURL.Query()
+	query.Set("sslmode", requiredEnv("DB_SSLMODE"))
+	connURL.RawQuery = query.Encode()
+
+	db, err := sql.Open("pgx", connURL.String())
 	if err != nil {
 		log.Fatalf("failed to connect to the database: %v", err)
 	}
@@ -86,4 +103,12 @@ func main() {
 
 	fmt.Println("Servidor iniciado en http://localhost:8080/")
 	http.ListenAndServe(":8080", mux)
+}
+
+func requiredEnv(key string) string {
+	value, ok := os.LookupEnv(key)
+	if !ok || value == "" {
+		log.Fatalf("required environment variable %s is not set", key)
+	}
+	return value
 }

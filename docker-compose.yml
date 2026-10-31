@@ -3,9 +3,9 @@ services:
     image: postgres:15
     container_name: postgres-tpe
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: u
-      POSTGRES_PASSWORD: p
+      POSTGRES_DB: ${DB_NAME:?DB_NAME is required}
+      POSTGRES_USER: ${DB_USER:?DB_USER is required}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
     ports:
       - "5432:5432"
     volumes:
