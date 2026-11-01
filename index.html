@@ -1,13 +1,92 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TPEspecial</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tandil, qué hacer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Que hacer en Tandil</h1>
-    <p>Nuestra aplicación tiene como objetivo ser un portal al que las personas puedan acceder en busca de actividades y lugares interesantes para visitar en Tandil. En principio, las entidades definidas serán las siguientes (junto con sus atributos): Usuario: nombre, mail, preferencias, edad; Colaborador: nombre, rubro; Evento: título, descripción, fecha, hora, lugar, rango de edad y categoría.</p>
+
+  <header class="cabecera">
+    <h1>Tandil, qué hacer</h1>
+    <p>Talleres, fiestas, paseos en familia y todo lo que pasa en la ciudad y no te enterabas.</p>
+  </header>
+
+  <p id="mensaje" role="status"></p>
+
+  <main class="contenedor">
+
+    <!-- Lista de eventos -->
+    <section class="eventos">
+      <h2>Próximos eventos</h2>
+      <div id="lista-eventos"></div>
+    </section>
+
+    <!-- Formularios y listas auxiliares -->
+    <aside class="lateral">
+
+      <section class="panel">
+        <h2>Publicar un evento</h2>
+        <form id="form-evento">
+          <label>Título
+            <input type="text" id="evento-titulo" required>
+          </label>
+          <label>Descripción
+            <textarea id="evento-descripcion" rows="3" required></textarea>
+          </label>
+          <label>Fecha y hora
+            <input type="datetime-local" id="evento-fecha" required>
+          </label>
+          <label>Lugar
+            <input type="text" id="evento-lugar" required>
+          </label>
+          <label>Organizador
+            <select id="evento-creador" required></select>
+          </label>
+          <fieldset>
+            <legend>Categorías</legend>
+            <div id="evento-categorias"></div>
+          </fieldset>
+          <button type="submit">Publicar evento</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Categorías</h2>
+        <ul id="lista-categorias" class="lista-simple"></ul>
+        <form id="form-categoria" class="form-en-linea">
+          <input type="text" id="categoria-nombre" placeholder="Nueva categoría" aria-label="Nombre de la categoría" required>
+          <button type="submit">Agregar</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Usuarios</h2>
+        <ul id="lista-usuarios" class="lista-simple"></ul>
+        <form id="form-usuario">
+          <label>Nombre
+            <input type="text" id="usuario-nombre" required>
+          </label>
+          <label>Email
+            <input type="email" id="usuario-email" required>
+          </label>
+          <label>Tipo de usuario
+            <select id="usuario-rol">
+              <option value="user">Usuario común</option>
+              <option value="creator">Organizador de eventos</option>
+            </select>
+          </label>
+          <button type="submit">Crear usuario</button>
+        </form>
+      </section>
+
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>
