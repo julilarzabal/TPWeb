@@ -12,6 +12,7 @@ const API_URL = "http://localhost:8080";
 let eventos = [];
 let categorias = [];
 let usuarios = [];
+let busqueda = "";
 
 // ---------------------------------------------------------------
 // Funciones de ayuda
@@ -88,14 +89,26 @@ async function cargarTodo() {
 // ---------------------------------------------------------------
 function dibujarEventos() {
   const contenedor = document.getElementById("lista-eventos");
+  const termino = busqueda.trim().toLowerCase();
+  const visibles = termino
+    ? eventos.filter((evento) =>
+        [evento.title, evento.description, evento.location, evento.age_range]
+          .join(" ")
+          .toLowerCase()
+          .includes(termino)
+      )
+    : eventos;
 
-  if (eventos.length === 0) {
-    contenedor.innerHTML = "<p class='vacio'>Todavía no hay eventos. Publicá el primero con el formulario.</p>";
+  if (visibles.length === 0) {
+    const texto = eventos.length === 0
+      ? "Todavía no hay eventos. Publicá el primero con el botón Create Event."
+      : "No hay eventos que coincidan con tu búsqueda.";
+    contenedor.innerHTML = `<p class="vacio">${texto}</p>`;
     return;
   }
 
   let html = "";
-  for (const evento of eventos) {
+  for (const evento of visibles) {
     const fecha = new Date(evento.fecha).toLocaleDateString("es-AR", {
       dateStyle: "full",
       timeZone: "UTC",
@@ -189,6 +202,7 @@ document.getElementById("form-evento").addEventListener("submit", async (evento)
     }
 
     evento.target.reset();
+    evento.target.closest("dialog")?.close();
     await cargarTodo(); // volvemos a pedir la lista completa
   } catch (error) {
     mostrarMensaje("No se pudo crear el evento: " + error.message);
@@ -202,6 +216,7 @@ document.getElementById("form-categoria").addEventListener("submit", async (even
       name: document.getElementById("categoria-nombre").value,
     });
     evento.target.reset();
+    evento.target.closest("dialog")?.close();
     await cargarTodo();
   } catch (error) {
     mostrarMensaje("No se pudo crear la categoría: " + error.message);
@@ -219,10 +234,45 @@ document.getElementById("form-usuario").addEventListener("submit", async (evento
       role: document.getElementById("usuario-rol").value,
     });
     evento.target.reset();
+    evento.target.closest("dialog")?.close();
     await cargarTodo();
   } catch (error) {
     mostrarMensaje("No se pudo crear el usuario: " + error.message);
   }
+});
+
+// ---------------------------------------------------------------
+// Búsqueda, carrusel y diálogos
+// ---------------------------------------------------------------
+document.getElementById("buscador").addEventListener("input", (evento) => {
+  busqueda = evento.target.value;
+  dibujarEventos();
+});
+
+const pistaEventos = document.getElementById("lista-eventos");
+document.getElementById("carrusel-prev").addEventListener("click", () => {
+  pistaEventos.scrollBy({ left: -340, behavior: "smooth" });
+});
+document.getElementById("carrusel-next").addEventListener("click", () => {
+  pistaEventos.scrollBy({ left: 340, behavior: "smooth" });
+});
+
+document.querySelectorAll("[data-abrir-dialogo]").forEach((boton) => {
+  boton.addEventListener("click", () => {
+    document.getElementById(boton.dataset.abrirDialogo).showModal();
+  });
+});
+
+document.querySelectorAll("[data-cerrar-dialogo]").forEach((boton) => {
+  boton.addEventListener("click", () => {
+    boton.closest("dialog").close();
+  });
+});
+
+document.querySelectorAll("dialog").forEach((dialogo) => {
+  dialogo.addEventListener("click", (evento) => {
+    if (evento.target === dialogo) dialogo.close();
+  });
 });
 
 // ---------------------------------------------------------------
