@@ -41,11 +41,13 @@ func TestUserCRUD(t *testing.T) {
 	name := fmt.Sprintf("User-%d", uniqueID())
 	email := fmt.Sprintf("user-%d@example.com", uniqueID())
 
+	age := time.Date(1995, 7, 20, 0, 0, 0, 0, time.UTC)
+	industry := "Technology"
 	created, err := queries.CreateUser(ctx, sqlc.CreateUserParams{
 		Name:     name,
 		Email:    email,
-		Age:      sql.NullTime{Time: time.Date(1995, 7, 20, 0, 0, 0, 0, time.UTC), Valid: true},
-		Industry: sql.NullString{String: "Technology", Valid: true},
+		Age:      &age,
+		Industry: &industry,
 		Role:     "Developer",
 	})
 	if err != nil {
@@ -77,12 +79,14 @@ func TestUserCRUD(t *testing.T) {
 
 	updatedName := fmt.Sprintf("Updated-%s", name)
 	updatedEmail := fmt.Sprintf("updated-%d@example.com", uniqueID())
+	updatedAge := time.Date(1996, 3, 10, 0, 0, 0, 0, time.UTC)
+	updatedIndustry := "Finance"
 	err = queries.UpdateUser(ctx, sqlc.UpdateUserParams{
 		ID:       created.ID,
 		Name:     updatedName,
 		Email:    updatedEmail,
-		Age:      sql.NullTime{Time: time.Date(1996, 3, 10, 0, 0, 0, 0, time.UTC), Valid: true},
-		Industry: sql.NullString{String: "Finance", Valid: true},
+		Age:      &updatedAge,
+		Industry: &updatedIndustry,
 		Role:     "Manager",
 	})
 	if err != nil {
@@ -123,9 +127,10 @@ func TestEventCRUD(t *testing.T) {
 		_ = queries.DeleteUser(ctx, owner.ID)
 	}()
 
+	description := "Welcome to the event"
 	created, err := queries.CreateEvent(ctx, sqlc.CreateEventParams{
 		Title:       fmt.Sprintf("Event-%d", uniqueID()),
-		Description: sql.NullString{String: "Welcome to the event", Valid: true},
+		Description: &description,
 		Location:    "Buenos Aires",
 		AgeRange:    "18+",
 		CreatorID:   owner.ID,
@@ -158,10 +163,11 @@ func TestEventCRUD(t *testing.T) {
 		t.Fatalf("created event not found in ListEvents, id=%d", created.ID)
 	}
 
+	updatedDescription := "Updated description"
 	err = queries.UpdateEvent(ctx, sqlc.UpdateEventParams{
 		ID:          created.ID,
 		Title:       "Updated Event",
-		Description: sql.NullString{String: "Updated description", Valid: true},
+		Description: &updatedDescription,
 		Location:    "Córdoba",
 		AgeRange:    "21+",
 		CreatorID:   owner.ID,

@@ -55,9 +55,14 @@ func (s *Server) CreateEventHandler(w http.ResponseWriter, r *http.Request) {
 		r.Context(): Pasa el contexto de la solicitud HTTP.
 		sqlc.CreateEventParams{...}: Estructura con los parámetros para la consulta.
 	*/
+	var description *string
+	if req.Description != "" {
+		description = &req.Description
+	}
+
 	event, err := s.queries.CreateEvent(r.Context(), sqlc.CreateEventParams{
 		Title:       req.Title,
-		Description: sql.NullString{String: req.Description, Valid: req.Description != ""},
+		Description: description,
 		Location:    req.Location,
 		AgeRange:    req.AgeRange,
 		CreatorID:   req.CreatorID,
@@ -182,10 +187,15 @@ func (s *Server) UpdateEventHandler(w http.ResponseWriter, r *http.Request) {
 		r.Context(): Pasa el contexto de la solicitud HTTP.
 		sqlc.UpdateEventParams{...}: Estructura con los parámetros para la consulta de actualización.
 	*/
+	var description *string
+	if req.Description != "" {
+		description = &req.Description
+	}
+
 	err = s.queries.UpdateEvent(r.Context(), sqlc.UpdateEventParams{
 		ID:          int32(id),
 		Title:       req.Title,
-		Description: sql.NullString{String: req.Description, Valid: req.Description != ""},
+		Description: description,
 		Location:    req.Location,
 		AgeRange:    req.AgeRange,
 		CreatorID:   req.CreatorID,

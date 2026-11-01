@@ -43,26 +43,26 @@ func (s *Server) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 3. Conversión de datos (String -> sql.NullTime / sql.NullString)
-	var ageNull sql.NullTime
+	// 3. Conversión de datos opcionales (punteros para columnas NULL)
+	var age *time.Time
 	if req.Age != "" {
 		parsedDate, err := time.Parse("2006-01-02", req.Age)
 		if err == nil {
-			ageNull = sql.NullTime{Time: parsedDate, Valid: true}
+			age = &parsedDate
 		}
 	}
 
-	industryNull := sql.NullString{
-		String: req.Industry,
-		Valid:  req.Industry != "",
+	var industry *string
+	if req.Industry != "" {
+		industry = &req.Industry
 	}
 
 	// 4. Guardar en la base de datos mediante sqlc
 	user, err := s.queries.CreateUser(r.Context(), sqlc.CreateUserParams{
 		Name:     req.Name,
 		Email:    req.Email,
-		Age:      ageNull,
-		Industry: industryNull,
+		Age:      age,
+		Industry: industry,
 		Role:     req.Role,
 	})
 	if err != nil {
@@ -138,25 +138,25 @@ func (s *Server) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var ageNull sql.NullTime
+	var age *time.Time
 	if req.Age != "" {
 		parsedDate, err := time.Parse("2006-01-02", req.Age)
 		if err == nil {
-			ageNull = sql.NullTime{Time: parsedDate, Valid: true}
+			age = &parsedDate
 		}
 	}
 
-	industryNull := sql.NullString{
-		String: req.Industry,
-		Valid:  req.Industry != "",
+	var industry *string
+	if req.Industry != "" {
+		industry = &req.Industry
 	}
 
 	err = s.queries.UpdateUser(r.Context(), sqlc.UpdateUserParams{
 		ID:       int32(id),
 		Name:     req.Name,
 		Email:    req.Email,
-		Age:      ageNull,
-		Industry: industryNull,
+		Age:      age,
+		Industry: industry,
 		Role:     req.Role,
 	})
 	if err != nil {

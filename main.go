@@ -99,7 +99,8 @@ func main() {
 	mux.HandleFunc("GET /events/{id}/categories", server.ListEventCategoriesHandler)
 	mux.HandleFunc("DELETE /events/{id}/categories/{category_id}", server.RemoveEventCategoryHandler)
 	mux.HandleFunc("DELETE /events/{id}/categories", server.DeleteEventCategoriesHandler)
-	mux.Handle("/style.css", http.FileServer(http.Dir(".")))
+	mux.Handle("/app.js", http.FileServer(http.Dir(".")))
+	mux.Handle("/styles.css", http.FileServer(http.Dir(".")))
 
 	fmt.Println("Servidor iniciado en http://localhost:8080/")
 	http.ListenAndServe(":8080", mux)

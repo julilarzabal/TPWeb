@@ -8,3 +8,17 @@ sql:
         package: "db"
         out: "./db/sqlc/"
         emit_json_tags: true
+        overrides:
+          - column: "user.age"
+            go_type:
+              import: "time"
+              type: "Time"
+              pointer: true
+          - column: "user.industry"
+            go_type:
+              type: "string"
+              pointer: true
+          - column: "event.description"
+            go_type:
+              type: "string"
+              pointer: true
