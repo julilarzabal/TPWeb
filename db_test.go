@@ -128,7 +128,8 @@ func TestEventCRUD(t *testing.T) {
 		Description: sql.NullString{String: "Welcome to the event", Valid: true},
 		Location:    "Buenos Aires",
 		AgeRange:    "18+",
-		UserID:      owner.ID,
+		CreatorID:   owner.ID,
+		Fecha:       time.Date(2026, 11, 1, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		t.Fatalf("CreateEvent failed: %v", err)
@@ -163,7 +164,8 @@ func TestEventCRUD(t *testing.T) {
 		Description: sql.NullString{String: "Updated description", Valid: true},
 		Location:    "Córdoba",
 		AgeRange:    "21+",
-		UserID:      owner.ID,
+		CreatorID:   owner.ID,
+		Fecha:       time.Date(2026, 12, 15, 0, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		t.Fatalf("UpdateEvent failed: %v", err)

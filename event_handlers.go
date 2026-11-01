@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 )
@@ -21,7 +22,8 @@ func (s *Server) CreateEventHandler(w http.ResponseWriter, r *http.Request) {
 		Description string `json:"description"`
 		Location    string `json:"location"`
 		AgeRange    string `json:"age_range"`
-		UserID      int32  `json:"user_id"`
+		CreatorID   int32  `json:"creator_id"`
+		Fecha       string `json:"fecha"`
 	}
 
 	// Carga de datos en req
@@ -40,6 +42,13 @@ func (s *Server) CreateEventHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// La fecha llega como texto en formato YYYY-MM-DD y se guarda como DATE
+	fecha, err := time.Parse("2006-01-02", req.Fecha)
+	if err != nil {
+		http.Error(w, "La fecha es obligatoria y debe tener formato YYYY-MM-DD", http.StatusBadRequest)
+		return
+	}
+
 	// 3. Ejecutar la consulta generada por sqlc
 	/*
 		s.queries.CreateEvent: Llama a la función generada por sqlc para crear un nuevo evento.
@@ -51,7 +60,8 @@ func (s *Server) CreateEventHandler(w http.ResponseWriter, r *http.Request) {
 		Description: sql.NullString{String: req.Description, Valid: req.Description != ""},
 		Location:    req.Location,
 		AgeRange:    req.AgeRange,
-		UserID:      req.UserID,
+		CreatorID:   req.CreatorID,
+		Fecha:       fecha,
 	})
 
 	/*
@@ -145,7 +155,8 @@ func (s *Server) UpdateEventHandler(w http.ResponseWriter, r *http.Request) {
 		Description string `json:"description"`
 		Location    string `json:"location"`
 		AgeRange    string `json:"age_range"`
-		UserID      int32  `json:"user_id"`
+		CreatorID   int32  `json:"creator_id"`
+		Fecha       string `json:"fecha"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -156,6 +167,12 @@ func (s *Server) UpdateEventHandler(w http.ResponseWriter, r *http.Request) {
 	// 3. Validar datos
 	if req.Title == "" {
 		http.Error(w, "El título no puede estar vacío", http.StatusBadRequest)
+		return
+	}
+
+	fecha, err := time.Parse("2006-01-02", req.Fecha)
+	if err != nil {
+		http.Error(w, "La fecha es obligatoria y debe tener formato YYYY-MM-DD", http.StatusBadRequest)
 		return
 	}
 
@@ -171,7 +188,8 @@ func (s *Server) UpdateEventHandler(w http.ResponseWriter, r *http.Request) {
 		Description: sql.NullString{String: req.Description, Valid: req.Description != ""},
 		Location:    req.Location,
 		AgeRange:    req.AgeRange,
-		UserID:      req.UserID,
+		CreatorID:   req.CreatorID,
+		Fecha:       fecha,
 	})
 	if err != nil {
 		http.Error(w, "Error al actualizar el evento", http.StatusInternalServerError)

@@ -30,8 +30,9 @@ CREATE TABLE event (
     description TEXT,
     location VARCHAR(200) NOT NULL,
     age_range VARCHAR(50) NOT NULL,
-    user_id INT NOT NULL,
-    CONSTRAINT fk_event_user FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
+    creator_id INT NOT NULL,
+    fecha DATE NOT NULL,
+    CONSTRAINT fk_event_creator FOREIGN KEY (creator_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
 -- 5. N:M relationship between EVENT and CATEGORY

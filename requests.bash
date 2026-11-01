@@ -72,7 +72,8 @@ curl -i -X POST http://localhost:8080/events \
     "description": "Charla sobre arquitectura limpia, APIs REST y sqlc",
     "location": "Centro de Convenciones",
     "age_range": "18-65",
-    "user_id": 1
+    "creator_id": 1,
+    "fecha": "2026-11-15"
   }'
 
 echo -e "\n"

@@ -4,7 +4,7 @@
 // Dirección donde corre tu API en Go. Cambiala si usás otro puerto.
 const API_URL = "http://localhost:8080";
 
-// NOTA: los nombres de los campos JSON (title, description, date,
+// NOTA: los nombres de los campos JSON (title, description, fecha,
 // location, creator_id, name, email, role, category_id) son una suposición.
 // Si tu API usa otros nombres, cambialos en los formularios de abajo.
 
@@ -96,9 +96,9 @@ function dibujarEventos() {
 
   let html = "";
   for (const evento of eventos) {
-    const fecha = new Date(evento.date).toLocaleString("es-AR", {
+    const fecha = new Date(evento.fecha).toLocaleDateString("es-AR", {
       dateStyle: "full",
-      timeStyle: "short",
+      timeZone: "UTC",
     });
     const organizador = usuarios.find((u) => u.id === evento.creator_id);
     const etiquetas = (evento.categorias || [])
@@ -172,7 +172,7 @@ document.getElementById("form-evento").addEventListener("submit", async (evento)
     const nuevo = await enviarJSON("/events", {
       title: document.getElementById("evento-titulo").value,
       description: document.getElementById("evento-descripcion").value,
-      date: new Date(document.getElementById("evento-fecha").value).toISOString(),
+      fecha: document.getElementById("evento-fecha").value,
       location: document.getElementById("evento-lugar").value,
       creator_id: Number(document.getElementById("evento-creador").value),
     });

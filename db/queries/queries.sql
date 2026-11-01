@@ -83,17 +83,17 @@ DELETE FROM user_preference
 WHERE user_id = $1 AND category_id = $2;
 
 -- name: CreateEvent :one
-INSERT INTO event (title, description, location, age_range, user_id)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id, title, description, location, age_range, user_id;
+INSERT INTO event (title, description, location, age_range, creator_id, fecha)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, title, description, location, age_range, creator_id, fecha;
 
 -- name: GetEvent :one
-SELECT id, title, description, location, age_range, user_id
+SELECT id, title, description, location, age_range, creator_id, fecha
 FROM event
 WHERE id = $1;
 
 -- name: ListEvents :many
-SELECT id, title, description, location, age_range, user_id
+SELECT id, title, description, location, age_range, creator_id, fecha
 FROM event
 ORDER BY id DESC;
 
@@ -103,7 +103,8 @@ SET title = $2,
     description = $3,
     location = $4,
     age_range = $5,
-    user_id = $6
+    creator_id = $6,
+    fecha = $7
 WHERE id = $1;
 
 -- name: DeleteEvent :exec
