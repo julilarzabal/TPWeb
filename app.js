@@ -4,9 +4,9 @@
 // Dirección donde corre tu API en Go. Cambiala si usás otro puerto.
 const API_URL = "http://localhost:8080";
 
-// NOTA: los nombres de los campos JSON (title, description, fecha,
-// location, creator_id, name, email, role, category_id) son una suposición.
-// Si tu API usa otros nombres, cambialos en los formularios de abajo.
+// NOTA: los nombres de los campos JSON (title, description, location,
+// age_range, creator_id, fecha, name, email, age, industry, role,
+// category_id) coinciden con db/schema/schema.sql.
 
 // Acá guardamos los datos que trae la API para poder dibujarlos
 let eventos = [];
@@ -110,6 +110,7 @@ function dibujarEventos() {
         <div class="etiquetas">${etiquetas}</div>
         <h3>${escapar(evento.title)}</h3>
         <p class="fecha">${escapar(fecha)}</p>
+        <p class="rango">Rango de edad: ${escapar(evento.age_range)}</p>
         <p>${escapar(evento.description)}</p>
         <p class="lugar">${escapar(evento.location)}${organizador ? " · Organiza " + escapar(organizador.name) : ""}</p>
         <button class="borrar" data-tipo="events" data-id="${evento.id}">Eliminar</button>
@@ -149,7 +150,8 @@ function dibujarUsuarios() {
     .map(
       (u) => `
       <li>
-        <span>${escapar(u.name)} <small>${u.role === "creator" ? "(organizador)" : ""}</small></span>
+        <span>${escapar(u.name)} <small>${u.role === "creator" ? "(organizador)" : ""}</small>
+          <small>${escapar(u.industry)}${u.age ? " · " + escapar(u.age.slice(0, 10)) : ""}</small></span>
         <button class="borrar" data-tipo="users" data-id="${u.id}">Eliminar</button>
       </li>`
     )
@@ -174,6 +176,7 @@ document.getElementById("form-evento").addEventListener("submit", async (evento)
       description: document.getElementById("evento-descripcion").value,
       fecha: document.getElementById("evento-fecha").value,
       location: document.getElementById("evento-lugar").value,
+      age_range: document.getElementById("evento-rango-edad").value,
       creator_id: Number(document.getElementById("evento-creador").value),
     });
 
@@ -211,6 +214,8 @@ document.getElementById("form-usuario").addEventListener("submit", async (evento
     await enviarJSON("/users", {
       name: document.getElementById("usuario-nombre").value,
       email: document.getElementById("usuario-email").value,
+      age: document.getElementById("usuario-edad").value,
+      industry: document.getElementById("usuario-industria").value,
       role: document.getElementById("usuario-rol").value,
     });
     evento.target.reset();

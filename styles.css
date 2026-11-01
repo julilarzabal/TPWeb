@@ -81,6 +81,7 @@ h1, h2, h3 {
 .evento h3 { margin: 0.5rem 0 0.25rem; font-size: 1.4rem; }
 .evento p { margin: 0.35rem 0; }
 .fecha { color: var(--dique); font-weight: 600; }
+.rango { color: #55625d; font-size: 0.95rem; }
 .lugar { color: #55625d; font-size: 0.95rem; }
 .vacio { padding: 1.5rem; background: var(--papel); border: 1px dashed var(--borde); }
 
