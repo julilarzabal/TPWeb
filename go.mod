@@ -3,6 +3,7 @@ module TPEspecial.com/ProgramacionWeb/TPEspecial
 go 1.25.0
 
 require (
+	github.com/a-h/templ v0.3.1020
 	github.com/jackc/pgx/v5 v5.11.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.12.3
