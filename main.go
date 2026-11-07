@@ -71,6 +71,8 @@ func main() {
 
 	mux.HandleFunc("/", server.homeHandler)
 
+	mux.HandleFunc("GET /", server.homeHandler)
+
 	// Rutas para category
 	mux.HandleFunc("POST /categories", server.CreateCategoryHandler)
 	mux.HandleFunc("GET /categories", server.ListCategoriesHandler)
