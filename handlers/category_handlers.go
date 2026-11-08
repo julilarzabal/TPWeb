@@ -9,39 +9,37 @@ import (
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 )
 
-// HANDLERS DE CATEGORY
-
-// POST /categories: Crea una categoría nueva
+// CreateCategoryHandler procesa el POST del formulario
 func (s *Server) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
-	// Definimos una estructura temporal para guardar el JSON que envía el usuario
-	var input struct {
-		Name string `json:"name"`
-	}
-
-	// Leemos el cuerpo (Body) de la petición HTTP y lo guardamos en 'input'
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, "Error al decodificar JSON", http.StatusBadRequest)
+	// 1. Parsear los datos del formulario clásico
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Error al procesar el formulario", http.StatusBadRequest)
 		return
 	}
 
-	// Cumplimos la consigna: validamos que el nombre no esté vacío
-	if input.Name == "" {
-		http.Error(w, "El nombre de la categoría no puede estar vacío", http.StatusBadRequest)
+	// Extraer los datos usando el atributo 'name' de tus inputs en el .templ
+	name := r.FormValue("name")
+
+	// 2. Validación de regla de negocio
+	if name == "" {
+		http.Error(w, "El campo 'name' es obligatorio", http.StatusBadRequest)
 		return
 	}
 
-	// Llamamos al "cocinero" (sqlc) para que ejecute el INSERT en PostgreSQL
-	category, err := s.queries.CreateCategory(r.Context(), input.Name)
+	// 4. Guardar en la base de datos mediante el método create de sqlc
+	_, err := s.queries.CreateCategory(r.Context(), name)
 	if err != nil {
-		http.Error(w, "Error al guardar en la base de datos", http.StatusInternalServerError)
+		http.Error(w, "Error al guardar la categoria en la base de datos", http.StatusInternalServerError)
 		return
 	}
 
-	// Devolvemos el status 201 (Created) y el objeto recién guardado en formato JSON
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(category)
+	// 5. Redirigir al usuario (Patrón PRG)
+	http.Redirect(w, r, "/", http.StatusSeeOther) // Esto es completamente correcto según el TP
 }
+
+/*
+	HANDLERS TP3
+*/
 
 // GET /categories: Trae todas las categorías
 func (s *Server) ListCategoriesHandler(w http.ResponseWriter, r *http.Request) {

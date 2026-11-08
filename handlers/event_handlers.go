@@ -11,84 +11,58 @@ import (
 )
 
 func (s *Server) CreateEventHandler(w http.ResponseWriter, r *http.Request) {
-	// 1. Estructura para recibir el cuerpo JSON de la petición
-	/*
-		Es una estructura anónima que se usa como un DTO (Data Transfer Object).
-		Su única función es definir qué campos JSON esperas que el cliente
-		(por ejemplo, Postman, un frontend o curl) te envíe en el cuerpo (body) de la petición HTTP.
-	*/
-	var req struct {
-		Title       string `json:"title"`
-		Description string `json:"description"`
-		Location    string `json:"location"`
-		AgeRange    string `json:"age_range"`
-		CreatorID   int32  `json:"creator_id"`
-		Fecha       string `json:"fecha"`
-	}
-
-	// Carga de datos en req
-	/*
-		r.Body: Contiene el flujo de bytes (stream) con el JSON que envió el usuario.
-		json.NewDecoder(...).Decode(&req): Lee ese JSON, analiza sus claves y rellena los campos de la variable req.
-	*/
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "JSON inválido", http.StatusBadRequest)
+	// 1. Parsear los datos del formulario clásico
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Error al procesar el formulario", http.StatusBadRequest)
 		return
 	}
 
-	// 2. Validación (ejemplo: validar que el título no esté vacío)
-	if req.Title == "" {
-		http.Error(w, "El título es obligatorio", http.StatusBadRequest)
+	// Extraer los datos usando el atributo 'name' de tus inputs en el .templ
+	title := r.FormValue("title")
+	descriptionStr := r.FormValue("description")
+	location := r.FormValue("location")
+	ageRange := r.FormValue("ageRange")
+	creatorID, err := strconv.ParseInt(r.FormValue("creatorID"), 10, 32)
+	if err != nil || creatorID <= 0 {
+		http.Error(w, "El ID del organizador debe ser un entero positivo", http.StatusBadRequest)
+		return
+	}
+	fechaStr := r.FormValue("fecha")
+
+	// 2. Validación de regla de negocio
+	if title == "" || fechaStr == "" || location == "" {
+		http.Error(w, "Los campos 'title', 'fecha' y 'location' son obligatorios", http.StatusBadRequest)
 		return
 	}
 
-	// La fecha llega como texto en formato YYYY-MM-DD y se guarda como DATE
-	fecha, err := time.Parse("2006-01-02", req.Fecha)
+	// 3. Convertir la fecha al tipo requerido por sqlc.
+	fecha, err := time.Parse("2006-01-02", fechaStr)
 	if err != nil {
-		http.Error(w, "La fecha es obligatoria y debe tener formato YYYY-MM-DD", http.StatusBadRequest)
+		http.Error(w, "La fecha debe tener formato YYYY-MM-DD", http.StatusBadRequest)
 		return
 	}
 
-	// 3. Ejecutar la consulta generada por sqlc
-	/*
-		s.queries.CreateEvent: Llama a la función generada por sqlc para crear un nuevo evento.
-		r.Context(): Pasa el contexto de la solicitud HTTP.
-		sqlc.CreateEventParams{...}: Estructura con los parámetros para la consulta.
-	*/
 	var description *string
-	if req.Description != "" {
-		description = &req.Description
+	if descriptionStr != "" {
+		description = &descriptionStr
 	}
 
-	event, err := s.queries.CreateEvent(r.Context(), sqlc.CreateEventParams{
-		Title:       req.Title,
+	// 4. Guardar en la base de datos mediante el método create de sqlc
+	_, err = s.queries.CreateEvent(r.Context(), sqlc.CreateEventParams{
+		Title:       title,
 		Description: description,
-		Location:    req.Location,
-		AgeRange:    req.AgeRange,
-		CreatorID:   req.CreatorID,
+		Location:    location,
+		AgeRange:    ageRange,
+		CreatorID:   int32(creatorID),
 		Fecha:       fecha,
 	})
-
-	/*
-		http.Error(): Es una función auxiliar de Go para devolver respuestas de error en texto plano. Recibe 3 parámetros:
-		http.Error(w, "Mensaje de error", CÓDIGO_HTTP)
-		(Ideal para responder errores)
-	*/
 	if err != nil {
-		http.Error(w, "Error al crear el evento", http.StatusInternalServerError)
+		http.Error(w, "Error al guardar el evento en la base de datos", http.StatusInternalServerError)
 		return
 	}
 
-	// 4. Devolver la respuesta como JSON con estado 201 Created
-	// w.WriteHeader(...): (Ideal para respuestas Exitosas)
-	// a. Decirle al navegador/cliente que el contenido devuelto será JSON
-	w.Header().Set("Content-Type", "application/json")
-
-	// b. A AQUÍ SE INDICA EL CÓDIGO DE ESTADO (201 Created)
-	w.WriteHeader(http.StatusCreated) // O directamente: w.WriteHeader(201)
-
-	// c. Escribir el cuerpo del JSON que devolverás al cliente
-	json.NewEncoder(w).Encode(event)
+	// 5. Redirigir al usuario (Patrón PRG)
+	http.Redirect(w, r, "/", http.StatusSeeOther) // Esto es completamente correcto según el TP
 }
 
 func (s *Server) ListEventsHandler(w http.ResponseWriter, r *http.Request) {

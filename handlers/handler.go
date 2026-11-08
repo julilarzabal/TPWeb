@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
+	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 	"TPEspecial.com/ProgramacionWeb/TPEspecial/views"
 )
 

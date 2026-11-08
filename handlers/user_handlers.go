@@ -28,50 +28,56 @@ type UpdateUserRequest struct {
 	Role     string `json:"role"`
 }
 
-// CreateUserHandler procesa el POST del formulario, reutilizamos el handler hecho para la API REST
+// CreateUserHandler procesa el POST del formulario
 func (s *Server) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	// 1. Decodificar el JSON recibido en la petición
-	var req CreateUserRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "JSON de entrada inválido", http.StatusBadRequest)
+	// 1. Parsear los datos del formulario clásico
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Error al procesar el formulario", http.StatusBadRequest)
 		return
 	}
 
+	// Extraer los datos usando el atributo 'name' de tus inputs en el .templ
+	name := r.FormValue("name")
+	email := r.FormValue("email")
+	role := r.FormValue("role")
+	ageStr := r.FormValue("age")
+	industryStr := r.FormValue("industry")
+
 	// 2. Validación de regla de negocio
-	if req.Name == "" || req.Email == "" || req.Role == "" {
+	if name == "" || email == "" || role == "" {
 		http.Error(w, "Los campos 'name', 'email' y 'role' son obligatorios", http.StatusBadRequest)
 		return
 	}
 
-	// 3. Conversión de datos opcionales (punteros para columnas NULL)
+	// 3. Conversión de datos opcionales
 	var age *time.Time
-	if req.Age != "" {
-		parsedDate, err := time.Parse("2006-01-02", req.Age)
+	if ageStr != "" {
+		parsedDate, err := time.Parse("2006-01-02", ageStr)
 		if err == nil {
 			age = &parsedDate
 		}
 	}
 
 	var industry *string
-	if req.Industry != "" {
-		industry = &req.Industry
+	if industryStr != "" {
+		industry = &industryStr
 	}
 
-	// 4. Guardar en la base de datos mediante metodo create
-	user, err := s.queries.CreateUser(r.Context(), sqlc.CreateUserParams{
-		Name:     req.Name,
-		Email:    req.Email,
+	// 4. Guardar en la base de datos mediante el método create de sqlc
+	_, err := s.queries.CreateUser(r.Context(), sqlc.CreateUserParams{
+		Name:     name,
+		Email:    email,
 		Age:      age,
 		Industry: industry,
-		Role:     req.Role,
+		Role:     role,
 	})
 	if err != nil {
 		http.Error(w, "Error al guardar el usuario en la base de datos", http.StatusInternalServerError)
 		return
 	}
 
-	// 3. Redirigir al usuario (Patrón PRG)
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	// 5. Redirigir al usuario (Patrón PRG)
+	http.Redirect(w, r, "/", http.StatusSeeOther) // Esto es completamente correcto según el TP
 }
 
 /*

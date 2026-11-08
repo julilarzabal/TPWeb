@@ -69,6 +69,8 @@ func main() {
 	// Maneja la ruta principal con el handler que obtiene datos de la base de datos
 	http.HandleFunc("GET /", srv.HandleIndex)
 	http.HandleFunc("POST /users", srv.CreateUserHandler)
+	http.HandleFunc("POST /categories", srv.CreateCategoryHandler)
+	http.HandleFunc("POST /events", srv.CreateEventHandler)
 
 	// Servir los archivos estáticos (CSS, imágenes)
 	fs := http.FileServer(http.Dir("static"))
