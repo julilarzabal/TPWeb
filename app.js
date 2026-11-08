@@ -257,6 +257,14 @@ document.getElementById("carrusel-next").addEventListener("click", () => {
   pistaEventos.scrollBy({ left: 340, behavior: "smooth" });
 });
 
+const pistaCategorias = document.getElementById("lista-categorias");
+document.getElementById("carrusel-categorias-prev").addEventListener("click", () => {
+  pistaCategorias.scrollBy({ left: -340, behavior: "smooth" });
+});
+document.getElementById("carrusel-categorias-next").addEventListener("click", () => {
+  pistaCategorias.scrollBy({ left: 340, behavior: "smooth" });
+});
+
 document.querySelectorAll("[data-abrir-dialogo]").forEach((boton) => {
   boton.addEventListener("click", () => {
     document.getElementById(boton.dataset.abrirDialogo).showModal();

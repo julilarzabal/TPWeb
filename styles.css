@@ -375,6 +375,16 @@ button.borrar:hover { background: #fbece8; }
   background: rgba(255, 255, 255, 0.55);
 }
 
+.lista-categorias.carrusel-pista {
+  flex-wrap: nowrap;
+  padding: 0.3rem 0.3rem 1rem;
+}
+
+.lista-categorias.carrusel-pista li {
+  flex: none;
+  scroll-snap-align: start;
+}
+
 /* ---------------------------------------------------------------
    Diálogos y formularios
 --------------------------------------------------------------- */
