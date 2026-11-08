@@ -16,6 +16,8 @@ pre-test:
 	@sudo docker compose down -v
 	@echo "=== Generando código Go con sqlc ==="
 	@sqlc generate
+	@echo "=== Generando código Go con templ ==="
+	@templ generate
 	@echo "=== Compilando el proyecto ==="
 	@go build ./...
 	@echo "=== Levantando contenedor de PostgreSQL ==="
@@ -25,18 +27,16 @@ pre-test:
 		sleep 1; \
 	done
 	@echo "Base de datos lista."
+
+# 2. Ejecución de la aplicación
+run-tests:
+	@echo "=== [2/3]  Ejecutando la aplicación ==="
 	@go run . > /tmp/tpe-server.log 2>&1 & echo $$! > /tmp/tpe-server.pid
 	@echo "=== Esperando a que el servidor Go esté listo ==="
 	@until nc -z localhost 8080; do \
 		sleep 1; \
 	done
 	@echo "Servidor Go listo para recibir peticiones."
-
-# 2. Ejecución de pruebas de los endpoints
-run-tests:
-	@echo "=== [2/3]  Prueba de cada uno de los endpoints ==="
-	@chmod +x requests.bash
-	@./requests.bash
 
 # 3. Tareas posteriores
 post-test:
