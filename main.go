@@ -13,7 +13,7 @@ import (
 	"github.com/joho/godotenv"
 
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
-	"TPEspecial.com/ProgramacionWeb/TPEspecial/views"
+	"TPEspecial.com/ProgramacionWeb/TPEspecial/handlers"
 )
 
 // Server actúa como contenedor de las dependencias necesarias para los handlers
@@ -31,34 +31,6 @@ func (s *Server) homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Mostrar el formulario HTML
 	http.ServeFile(w, r, "index.html")
-}
-
-// Handler principal para GET /
-func handleIndex(queries *sqlc.Queries) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// 1. Obtener todos los registros de la base de datos usando sqlc
-		// IndexPage necesita tanto los eventos como las categorías, así que hacemos dos consultas.
-		events, err := queries.ListEvents(r.Context())
-		if err != nil {
-			http.Error(w, "Error al obtener datos", http.StatusInternalServerError)
-			return
-		}
-
-		categories, err := queries.ListCategories(r.Context())
-		if err != nil {
-			http.Error(w, "Error al obtener datos", http.StatusInternalServerError)
-			return
-		}
-
-		// 2. Llamar al componente de página principal pasándole los datos
-		component := views.IndexPage(events, categories)
-
-		// 3. Renderizar el componente completo en el http.ResponseWriter
-		err = component.Render(r.Context(), w)
-		if err != nil {
-			http.Error(w, "Error al renderizar la página", http.StatusInternalServerError)
-		}
-	}
 }
 
 func main() {
@@ -91,8 +63,12 @@ func main() {
 	// Crear la instancia del repositorio generado por sqlc
 	queries := sqlc.New(db)
 
+	// Instancio el struct pasándole la base de datos
+	srv := handlers.NewServer(queries)
+
 	// Maneja la ruta principal con el handler que obtiene datos de la base de datos
-	http.HandleFunc("/", handleIndex(queries))
+	http.HandleFunc("GET /", srv.HandleIndex)
+	http.HandleFunc("POST /users", srv.CreateUserHandler)
 
 	// Servir los archivos estáticos (CSS, imágenes)
 	fs := http.FileServer(http.Dir("static"))

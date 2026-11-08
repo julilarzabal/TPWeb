@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"database/sql"
@@ -28,7 +28,7 @@ type UpdateUserRequest struct {
 	Role     string `json:"role"`
 }
 
-// Handler para crear un nuevo usuario
+// CreateUserHandler procesa el POST del formulario, reutilizamos el handler hecho para la API REST
 func (s *Server) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. Decodificar el JSON recibido en la petición
 	var req CreateUserRequest
@@ -57,7 +57,7 @@ func (s *Server) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		industry = &req.Industry
 	}
 
-	// 4. Guardar en la base de datos mediante sqlc
+	// 4. Guardar en la base de datos mediante metodo create
 	user, err := s.queries.CreateUser(r.Context(), sqlc.CreateUserParams{
 		Name:     req.Name,
 		Email:    req.Email,
@@ -70,11 +70,13 @@ func (s *Server) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 5. Responder con estado 201 Created y el usuario recién creado
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(user)
+	// 3. Redirigir al usuario (Patrón PRG)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+/*
+	HANDLERS TP 3
+*/
 
 // Handler para listar los usuarios
 func (s *Server) ListUsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -195,3 +197,7 @@ func (s *Server) DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	// 204 No Content indica éxito sin cuerpo
 	w.WriteHeader(http.StatusNoContent)
 }
+
+/*
+	FIN HANDLERS TP 3
+*/
