@@ -74,7 +74,7 @@ func main() {
 
 	// Servir los archivos estáticos (CSS, imágenes)
 	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	http.Handle("GET /static/", http.StripPrefix("/static/", fs))
 
 	fmt.Println("Servidor iniciado en http://localhost:8080/")
 	http.ListenAndServe(":8080", nil)
