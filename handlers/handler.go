@@ -33,8 +33,14 @@ func (s *Server) HandleIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	users, err := s.queries.ListUsers(r.Context())
+	if err != nil {
+		http.Error(w, "Error al obtener datos", http.StatusInternalServerError)
+		return
+	}
+
 	// 2. Llamar al componente de página principal pasándole los datos
-	component := views.IndexPage(events, categories)
+	component := views.IndexPage(events, categories, users)
 
 	// 3. Renderizar el componente completo en el http.ResponseWriter
 	err = component.Render(r.Context(), w)

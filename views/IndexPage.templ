@@ -4,9 +4,8 @@ import (
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 )
 
-templ IndexPage(events []sqlc.Event, categories []sqlc.Category) {
+templ IndexPage(events []sqlc.Event, categories []sqlc.Category, users []sqlc.User) {
 	@Layout() {
-		<p id="mensaje" role="status"></p>
 		<main>
 			<section class="hero contenedor" id="inicio">
 				<div class="hero-texto">
@@ -50,10 +49,8 @@ templ IndexPage(events []sqlc.Event, categories []sqlc.Category) {
 					</figure>
 				</div>
 			</section>
-			@EventList()
-			@CategoryList()
+			@EventList(events, users)
+			@CategoryList(categories)
 		</main>
-		@EventDialog()
-		@CategoryDialog()
 	}
 }

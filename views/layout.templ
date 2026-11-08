@@ -10,7 +10,8 @@ templ Layout() {
 			<link rel="preconnect" href="https://fonts.googleapis.com"/>
 			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 			<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"/>
-			<link rel="stylesheet" href="pico.classless.css"/>
+			<link rel="stylesheet" href="/static/pico.classless.css"/>
+			<link rel="stylesheet" href="/static/layout.css"/>
 		</head>
 		<body>
 			<header class="cabecera">
@@ -19,11 +20,7 @@ templ Layout() {
 					<a href="#eventos">Events</a>
 					<a href="#categorias">Categories</a>
 					<a href="#contacto">Contact</a>
-					<label class="buscador">
-						<span class="sr-only">Buscar eventos</span>
-						<input type="search" id="buscador" placeholder="Buscar eventos…"/>
-					</label>
-					<button class="boton" type="button" data-abrir-dialogo="dialogo-registro">Sign Up</button>
+					@SignUpPanel()
 				</nav>
 			</header>
 
@@ -68,7 +65,6 @@ templ Layout() {
 					<p class="copyright">© 2026 Tandil App. Todos los derechos reservados.</p>
 				</div>
 			</footer>
-			@SignUpDialog()
 		</body>
 	</html>
 }

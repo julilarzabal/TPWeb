@@ -1,5 +1,9 @@
 package views
 
+import (
+	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
+)
+
 templ SignUpForm() {
 	<form id="form-usuario" method="post" action="/users">
 		<label>
@@ -29,23 +33,18 @@ templ SignUpForm() {
 	</form>
 }
 
-templ SignUpDialog() {
-	<dialog id="dialogo-registro" class="dialogo">
-		<div class="dialogo-contenido">
-			<div class="dialogo-cabecera">
-				<div>
-					<p class="antetitulo">Sumate a la comunidad</p>
-					<h2>Sign Up</h2>
-				</div>
-				<button class="cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar">×</button>
-			</div>
+templ SignUpPanel() {
+	<details class="desplegable desplegable-cabecera">
+		<summary class="boton">Sign Up</summary>
+		<div class="panel-formulario">
+			<p class="antetitulo">Sumate a la comunidad</p>
+			<h2>Sign Up</h2>
 			@SignUpForm()
-			@UserList()
 		</div>
-	</dialog>
+	</details>
 }
 
-templ EventForm() {
+templ EventForm(users []sqlc.User) {
 	<form id="form-evento" method="post" action="/events">
 		<label>
 			Título
@@ -69,29 +68,27 @@ templ EventForm() {
 		</label>
 		<label>
 			Organizador
-			<select id="evento-creador" name="creatorID" required></select>
+			<select id="creator-event" name="creatorID" required>
+				for _, user := range users {
+					if user.Role == "creator" {
+						<option value={ user.ID }>{ user.Name }</option>
+					}
+				}
+			</select>
 		</label>
-		<fieldset>
-			<legend>Categorías</legend>
-			<div id="evento-categorias" class="casillas"></div>
-		</fieldset>
 		<button class="boton" type="submit">Publicar evento</button>
 	</form>
 }
 
-templ EventDialog() {
-	<dialog id="dialogo-evento" class="dialogo">
-		<div class="dialogo-contenido">
-			<div class="dialogo-cabecera">
-				<div>
-					<p class="antetitulo">Nueva propuesta</p>
-					<h2>Create Event</h2>
-				</div>
-				<button class="cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar">×</button>
-			</div>
-			@EventForm()
+templ EventPanel(users []sqlc.User) {
+	<details class="desplegable">
+		<summary class="boton">Create Event</summary>
+		<div class="panel-formulario">
+			<p class="antetitulo">Nueva propuesta</p>
+			<h2>Create Event</h2>
+			@EventForm(users)
 		</div>
-	</dialog>
+	</details>
 }
 
 templ CategoryForm() {
@@ -104,17 +101,13 @@ templ CategoryForm() {
 	</form>
 }
 
-templ CategoryDialog() {
-	<dialog id="dialogo-categoria" class="dialogo">
-		<div class="dialogo-contenido">
-			<div class="dialogo-cabecera">
-				<div>
-					<p class="antetitulo">Nuevo tema</p>
-					<h2>Create Category</h2>
-				</div>
-				<button class="cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar">×</button>
-			</div>
+templ CategoryPanel() {
+	<details class="desplegable">
+		<summary class="boton boton-azul">Create Category</summary>
+		<div class="panel-formulario">
+			<p class="antetitulo">Nuevo tema</p>
+			<h2>Create Category</h2>
 			@CategoryForm()
 		</div>
-	</dialog>
+	</details>
 }

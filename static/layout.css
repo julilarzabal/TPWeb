@@ -1,0 +1,321 @@
+/* Page layout on top of Pico classless. Pico handles typography, forms,
+   buttons, cards and lists; these rules only add the page structure. */
+
+.contenedor {
+  width: min(1120px, 100%);
+  margin-inline: auto;
+}
+
+/* Header */
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.marca {
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.marca span {
+  color: var(--pico-primary);
+}
+
+.navegacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.navegacion > a {
+  text-decoration: none;
+}
+
+/* Links and summaries that look like Pico buttons */
+a.boton,
+summary.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal);
+  font-weight: 600;
+  line-height: var(--pico-line-height);
+  text-decoration: none;
+  color: var(--pico-primary-inverse);
+  background-color: var(--pico-primary-background);
+  border: var(--pico-border-width) solid var(--pico-primary-border);
+  border-radius: var(--pico-border-radius);
+  cursor: pointer;
+  list-style: none;
+}
+
+a.boton:hover,
+summary.boton:hover {
+  background-color: var(--pico-primary-hover-background);
+  border-color: var(--pico-primary-hover-border);
+}
+
+summary.boton::-webkit-details-marker {
+  display: none;
+}
+
+summary.boton::marker {
+  content: "";
+}
+
+summary.boton::after {
+  display: none;
+}
+
+a.boton.boton-azul,
+summary.boton.boton-azul {
+  background-color: var(--pico-secondary-background);
+  border-color: var(--pico-secondary-border);
+}
+
+a.boton.boton-azul:hover,
+summary.boton.boton-azul:hover {
+  background-color: var(--pico-secondary-hover-background);
+  border-color: var(--pico-secondary-hover-border);
+}
+
+/* CSS-only forms */
+details.desplegable {
+  flex: 0 1 auto;
+  margin: 0;
+}
+
+details.desplegable[open] {
+  flex: 1 1 100%;
+}
+
+details.desplegable[open] > summary.boton {
+  margin-bottom: 0;
+  margin-left: auto;
+}
+
+.panel-formulario {
+  max-width: 640px;
+  margin: 1rem 0 0 auto;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  background: var(--pico-card-background-color);
+  border: 1px solid var(--pico-card-border-color);
+  border-radius: var(--pico-border-radius);
+}
+
+.panel-formulario h2 {
+  margin-bottom: 1rem;
+}
+
+/* Header dropdown */
+.desplegable-cabecera {
+  position: relative;
+}
+
+.cabecera details.desplegable[open] {
+  flex: 0 1 auto;
+}
+
+.desplegable-cabecera .panel-formulario {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 30;
+  width: min(420px, calc(100vw - 2rem));
+  max-width: none;
+  margin: 0;
+}
+
+/* Hero */
+.hero {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.hero-texto h1 {
+  margin-bottom: 1rem;
+}
+
+.hero-imagenes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1rem;
+  min-height: 320px;
+}
+
+.visual {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--pico-card-background-color);
+  border-radius: var(--pico-border-radius);
+}
+
+.visual svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.visual-grande {
+  grid-row: span 2;
+}
+
+/* Sections and lists */
+.seccion {
+  margin-top: clamp(2rem, 5vw, 3rem);
+}
+
+.seccion-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.seccion-cabecera h2 {
+  margin-bottom: 0;
+}
+
+.lista-eventos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.evento {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.evento h3,
+.evento p {
+  margin: 0;
+}
+
+.evento .fecha {
+  font-weight: 600;
+  color: var(--pico-primary);
+}
+
+.evento .rango,
+.evento .lugar {
+  color: var(--pico-muted-color);
+  font-size: 0.95rem;
+}
+
+.vacio {
+  padding: 2rem;
+  text-align: center;
+  color: var(--pico-muted-color);
+  border: 1px dashed var(--pico-muted-border-color);
+  border-radius: var(--pico-border-radius);
+}
+
+.lista-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-categorias li {
+  margin: 0;
+  padding: 0.35rem 1rem;
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: 999px;
+}
+
+/* Footer */
+.pie-contenido {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+}
+
+.redes {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.redes a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.redes svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.copyright {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+@media (max-width: 800px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-imagenes {
+    min-height: 240px;
+  }
+
+  .navegacion {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  details.desplegable[open] {
+    flex: 1 1 100%;
+  }
+
+  .panel-formulario {
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .desplegable-cabecera .panel-formulario {
+    position: static;
+    width: auto;
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-imagenes {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    min-height: 0;
+  }
+
+  .visual-grande {
+    grid-row: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .visual {
+    aspect-ratio: 1 / 1;
+  }
+}

@@ -1,36 +1,55 @@
 package views
 
-templ EventList() {
+import (
+	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
+)
+
+templ EventList(events []sqlc.Event, users []sqlc.User) {
 	<section class="seccion contenedor" id="eventos">
 		<div class="seccion-cabecera">
 			<div>
 				<p class="antetitulo">Agenda de la ciudad</p>
 				<h2>Events</h2>
 			</div>
-			<button class="boton" type="button" data-abrir-dialogo="dialogo-evento">Create Event</button>
+			@EventPanel(users)
 		</div>
-		<div class="carrusel">
-			<button class="carrusel-flecha" id="carrusel-prev" type="button" aria-label="Eventos anteriores">‹</button>
-			<div id="lista-eventos" class="carrusel-pista"></div>
-			<button class="carrusel-flecha" id="carrusel-next" type="button" aria-label="Eventos siguientes">›</button>
-		</div>
+		if len(events) == 0 {
+			<p class="vacio">Todavía no hay eventos. Publicá el primero con el botón Create Event.</p>
+		} else {
+			<div class="lista-eventos">
+				for _, event := range events {
+					<article class="evento">
+						<h3>{ event.Title }</h3>
+						<p class="fecha">{ event.Fecha.Format("02/01/2006") }</p>
+						<p class="rango">Rango de edad: { event.AgeRange }</p>
+						if event.Description != nil {
+							<p>{ *event.Description }</p>
+						}
+						<p class="lugar">{ event.Location }</p>
+					</article>
+				}
+			</div>
+		}
 	</section>
 }
 
-templ CategoryList() {
+templ CategoryList(categories []sqlc.Category) {
 	<section class="seccion contenedor" id="categorias">
 		<div class="seccion-cabecera">
 			<div>
 				<p class="antetitulo">Explorá por tema</p>
 				<h2>Categories</h2>
 			</div>
-			<button class="boton boton-azul" type="button" data-abrir-dialogo="dialogo-categoria">Create Category</button>
+			@CategoryPanel()
 		</div>
-		<ul id="lista-categorias" class="lista-categorias"></ul>
+		if len(categories) == 0 {
+			<p class="vacio">Todavía no hay categorías. Creá la primera con el botón Create Category.</p>
+		} else {
+			<ul class="lista-categorias">
+				for _, category := range categories {
+					<li>{ category.Name }</li>
+				}
+			</ul>
+		}
 	</section>
-}
-
-templ UserList() {
-	<h3 class="subtitulo">Usuarios registrados</h3>
-	<ul id="lista-usuarios" class="lista-simple"></ul>
 }
