@@ -26,7 +26,7 @@ func SignUpForm() templ.Component {
 		}
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form id=\"form-usuario\"><label>Nombre <input type=\"text\" id=\"usuario-nombre\" required></label> <label>Email <input type=\"email\" id=\"usuario-email\" required></label> <label>Edad <input type=\"date\" id=\"usuario-edad\"></label> <label>Rubro <input type=\"text\" id=\"usuario-industria\"></label> <label>Tipo de usuario <select id=\"usuario-rol\"><option value=\"user\">Usuario común</option> <option value=\"creator\">Organizador de eventos</option></select></label> <button class=\"boton\" type=\"submit\">Crear cuenta</button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form id=\"form-usuario\" method=\"post\" action=\"/users\"><label>Nombre <input type=\"text\" id=\"usuario-nombre\" name=\"name\" required></label> <label>Email <input type=\"email\" id=\"usuario-email\" name=\"email\" required></label> <label>Edad <input type=\"date\" id=\"usuario-edad\" name=\"age\"></label> <label>Rubro <input type=\"text\" id=\"usuario-industria\" name=\"industry\"></label> <label>Tipo de usuario <select id=\"usuario-rol\" name=\"role\"><option value=\"user\">Usuario común</option> <option value=\"creator\">Organizador de eventos</option></select></label> <button class=\"boton\" type=\"submit\">Crear cuenta</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -88,7 +88,7 @@ func EventForm() templ.Component {
 		}
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form id=\"form-evento\"><label>Título <input type=\"text\" id=\"evento-titulo\" required></label> <label>Descripción <textarea id=\"evento-descripcion\" rows=\"3\" required></textarea></label> <label>Fecha <input type=\"date\" id=\"evento-fecha\" required></label> <label>Lugar <input type=\"text\" id=\"evento-lugar\" required></label> <label>Rango de edad <input type=\"text\" id=\"evento-rango-edad\" placeholder=\"Ej.: 18-65\" required></label> <label>Organizador <select id=\"evento-creador\" required></select></label><fieldset><legend>Categorías</legend><div id=\"evento-categorias\" class=\"casillas\"></div></fieldset><button class=\"boton\" type=\"submit\">Publicar evento</button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form id=\"form-evento\" method=\"post\" action=\"/events\"><label>Título <input type=\"text\" id=\"evento-titulo\" name=\"title\" required></label> <label>Descripción <textarea id=\"evento-descripcion\" name=\"description\" rows=\"3\" required></textarea></label> <label>Fecha <input type=\"date\" id=\"evento-fecha\" name=\"fecha\" required></label> <label>Lugar <input type=\"text\" id=\"evento-lugar\" name=\"location\" required></label> <label>Rango de edad <input type=\"text\" id=\"evento-rango-edad\" name=\"ageRange\" placeholder=\"Ej.: 18-65\" required></label> <label>Organizador <select id=\"evento-creador\" name=\"creatorID\" required></select></label><fieldset><legend>Categorías</legend><div id=\"evento-categorias\" class=\"casillas\"></div></fieldset><button class=\"boton\" type=\"submit\">Publicar evento</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -146,7 +146,7 @@ func CategoryForm() templ.Component {
 		}
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<form id=\"form-categoria\"><label>Nombre <input type=\"text\" id=\"categoria-nombre\" placeholder=\"Ej.: Música\" required></label> <button class=\"boton boton-azul\" type=\"submit\">Crear categoría</button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<form id=\"form-categoria\" method=\"post\" action=\"/categories\"><label>Nombre <input type=\"text\" id=\"categoria-nombre\" name=\"name\" placeholder=\"Ej.: Música\" required></label> <button class=\"boton boton-azul\" type=\"submit\">Crear categoría</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
