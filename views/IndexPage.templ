@@ -1,6 +1,10 @@
 package views
 
-templ IndexPage() {
+import (
+	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
+)
+
+templ IndexPage(events []sqlc.Event, categories []sqlc.Category) {
 	@Layout() {
 		<p id="mensaje" role="status"></p>
 		<main>

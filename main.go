@@ -13,6 +13,7 @@ import (
 	"github.com/joho/godotenv"
 
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
+	"TPEspecial.com/ProgramacionWeb/TPEspecial/views"
 )
 
 // Server actúa como contenedor de las dependencias necesarias para los handlers
@@ -30,6 +31,34 @@ func (s *Server) homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Mostrar el formulario HTML
 	http.ServeFile(w, r, "index.html")
+}
+
+// Handler principal para GET /
+func handleIndex(queries *sqlc.Queries) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// 1. Obtener todos los registros de la base de datos usando sqlc
+		// IndexPage necesita tanto los eventos como las categorías, así que hacemos dos consultas.
+		events, err := queries.ListEvents(r.Context())
+		if err != nil {
+			http.Error(w, "Error al obtener datos", http.StatusInternalServerError)
+			return
+		}
+
+		categories, err := queries.ListCategories(r.Context())
+		if err != nil {
+			http.Error(w, "Error al obtener datos", http.StatusInternalServerError)
+			return
+		}
+
+		// 2. Llamar al componente de página principal pasándole los datos
+		component := views.IndexPage(events, categories)
+
+		// 3. Renderizar el componente completo en el http.ResponseWriter
+		err = component.Render(r.Context(), w)
+		if err != nil {
+			http.Error(w, "Error al renderizar la página", http.StatusInternalServerError)
+		}
+	}
 }
 
 func main() {
@@ -62,50 +91,15 @@ func main() {
 	// Crear la instancia del repositorio generado por sqlc
 	queries := sqlc.New(db)
 
-	server := &Server{
-		queries: queries,
-	}
+	// Maneja la ruta principal con el handler que obtiene datos de la base de datos
+	http.HandleFunc("/", handleIndex(queries))
 
-	// Configurar rutas utilizando las funciones del Server
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", server.homeHandler)
-
-	mux.HandleFunc("GET /", server.homeHandler)
-
-	// Rutas para category
-	mux.HandleFunc("POST /categories", server.CreateCategoryHandler)
-	mux.HandleFunc("GET /categories", server.ListCategoriesHandler)
-	mux.HandleFunc("GET /categories/{id}", server.GetCategoryHandler)
-	mux.HandleFunc("PUT /categories/{id}", server.UpdateCategoryHandler)
-	mux.HandleFunc("DELETE /categories/{id}", server.DeleteCategoryHandler)
-	//Rutas para user_preferences
-	mux.HandleFunc("POST /user-preferences", server.AddUserPreferenceHandler)
-	mux.HandleFunc("GET /user-preferences/{user_id}", server.ListUserPreferencesHandler)
-	mux.HandleFunc("PUT /user-preferences/{user_id}", server.UpdateUserPreferencesHandler)
-	mux.HandleFunc("DELETE /user-preferences/{user_id}/{category_id}", server.RemoveUserPreferenceHandler)
-	// Rutas para event
-	mux.HandleFunc("POST /events", server.CreateEventHandler)
-	mux.HandleFunc("GET /events", server.ListEventsHandler)
-	mux.HandleFunc("GET /events/{id}", server.GetEventHandler)
-	mux.HandleFunc("PUT /events/{id}", server.UpdateEventHandler)
-	mux.HandleFunc("DELETE /events/{id}", server.DeleteEventHandler)
-	//Rutas para user
-	mux.HandleFunc("POST /users", server.CreateUserHandler)
-	mux.HandleFunc("GET /users", server.ListUsersHandler)
-	mux.HandleFunc("GET /users/{id}", server.GetUserHandler)
-	mux.HandleFunc("PUT /users/{id}", server.UpdateUserHandler)
-	mux.HandleFunc("DELETE /users/{id}", server.DeleteUserHandler)
-	// Rutas para event_category
-	mux.HandleFunc("POST /events/{id}/categories", server.AddEventCategoryHandler)
-	mux.HandleFunc("GET /events/{id}/categories", server.ListEventCategoriesHandler)
-	mux.HandleFunc("DELETE /events/{id}/categories/{category_id}", server.RemoveEventCategoryHandler)
-	mux.HandleFunc("DELETE /events/{id}/categories", server.DeleteEventCategoriesHandler)
-	mux.Handle("/app.js", http.FileServer(http.Dir(".")))
-	mux.Handle("/styles.css", http.FileServer(http.Dir(".")))
+	// Servir los archivos estáticos (CSS, imágenes)
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	fmt.Println("Servidor iniciado en http://localhost:8080/")
-	http.ListenAndServe(":8080", mux)
+	http.ListenAndServe(":8080", nil)
 }
 
 func requiredEnv(key string) string {
