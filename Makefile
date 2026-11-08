@@ -17,7 +17,7 @@ pre-test:
 	@echo "=== Generando código Go con sqlc ==="
 	@sqlc generate
 	@echo "=== Generando código Go con templ ==="
-	@templ generate
+	@go run github.com/a-h/templ/cmd/templ@v0.3.1020 generate
 	@echo "=== Compilando el proyecto ==="
 	@go build ./...
 	@echo "=== Levantando contenedor de PostgreSQL ==="
