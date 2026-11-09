@@ -1,16 +1,16 @@
 # Variables
 DB_CONTAINER_NAME := postgres-tpe
 
-.PHONY: test pre-test run-tests post-test
+.PHONY: run pre-run run-app post-run
 
-# Target principal que se ejecuta con 'make test'
-test:
-	@make pre-test
-	@make run-tests || (make post-test && exit 1)
-	@make post-test
+# Target principal que se ejecuta con 'make run'
+run:
+	@make pre-run
+	@make run-app || (make post-run && exit 1)
+	@make post-run
 
 # 1. Tareas previas
-pre-test:
+pre-run:
 	@echo "=== [1/3] Limpiando contenedores y volúmenes previos ==="
 	@sudo docker compose down -v
 	@kill $$(cat /tmp/tpe-server.pid 2>/dev/null) 2>/dev/null || true
@@ -30,7 +30,7 @@ pre-test:
 	@echo "Base de datos lista."
 
 # 2. Ejecución de la aplicación
-run-tests:
+run-app:
 	@echo "=== [2/3]  Ejecutando la aplicación ==="
 	@/tmp/tpe-server > /tmp/tpe-server.log 2>&1 & echo $$! > /tmp/tpe-server.pid
 	@echo "=== Esperando a que el servidor Go esté listo ==="
@@ -45,7 +45,7 @@ run-tests:
 	@read -r _ || true
 
 # 3. Tareas posteriores
-post-test:
+post-run:
 	@echo "=== [3/3] Limpiando contenedores y volúmenes ==="
 	@sudo docker compose down -v
 	@echo "=== Apagando servidor Go ==="
