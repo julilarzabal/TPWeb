@@ -1,9 +1,7 @@
 # TPWeb
-Luego de clonar el repositorio, ejecutar el siguiente comando:  _make test_
+Luego de clonar el repositorio, ejecutar el siguiente comando:  _make run_
 
-Es necesario tener la siguiente herramienta: docker-compose-v2
-
-Antes de ejecutar las pruebas, configurar `.env` en la raíz con `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` y `DB_SSLMODE`. La aplicación y Docker Compose usan estas mismas variables para conectarse a PostgreSQL.
+Es necesario tener las siguientes herramientas: _docker-compose-v2_ y _templ v0.3.1100_
 
 ### Documentación: 
 Creamos 3 tablas principales que son: _User_, _Category_ y _Event_.
@@ -16,17 +14,8 @@ La tabla _Category_ será usada tanto por los eventos (categoría/s a la/s cual/
 
 Las relaciones entre las tablas indicadas requieren 2 tablas adicionales, la tabla _user_preference_ (relación N:M entre User y Category) y _event_category_ (relación N:M entre Event y Category)
 
-Por último, la tabla _Event_ representa a cada evento por sí mismo y cada uno está asociado a un usuario, el cual (en un futuro) deberá ser colaborador.
+Por último, la tabla _Event_ representa a cada evento por sí mismo y cada uno está asociado a un usuario, el cual debe ser "organizador".
 
-En esta entrega en particular construimos una API Rest, para lo cuál debimos implementar todos los handlers CRUD necesarios.
-A continuación indicamos qué handlers creamos para cada entidad
-    
-Para User: CreateUserHandler, ListUsersHandler, GetUserHandler, UpdateUserHandler y DeleteUserHandler
-
-Para Event: CreateEventHandler, ListEventsHandler, GetEventHandler, UpdateEventHandler y DeleteEventHandler
-
-Para Category: CreateCategoryHandler, ListCategoriesHandler, GetCategoryHandler, UpdateCategoryHandler y DeleteCategoryHandler
-
-Para User_Preference: AddUserPreferenceHandler, ListUserPreferencesHandler, UpdateUserPreferencesHandler y RemoveUserPreferenceHandler
-
-Para Event_Category: AddEventCategoryHandler, ListEventCategoriesHandler, RemoveEventCategoryHandler y DeleteEventCategoriesHandler
+En esta entrega en particular abandonamos el enfoque de API + Cliente JS, creado en el tp4, para integrar la vista directamente en el servidor Go.
+Para ello, creamos los componentes .templ, refactorizamos el servidor Go, con la creación de un nuevo handler principal encargado de renderizar el componente completo, y también
+tuvimos que modificar los siguientes handlers, creados anteriormente, para el manejo de los formularios: CreateUserHandler, CreateEventHandler y CreateCategoryHandler. 
