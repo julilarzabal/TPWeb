@@ -3,6 +3,8 @@ Luego de clonar el repositorio, ejecutar el siguiente comando:  _make run_
 
 Es necesario tener las siguientes herramientas: _docker-compose-v2_ y _templ v0.3.1100_
 
+Antes de ejecutar la aplicación, configurar `.env` en la raíz con el comando: _cp .env.example .env_
+
 ### Documentación: 
 Creamos 3 tablas principales que son: _User_, _Category_ y _Event_.
 
