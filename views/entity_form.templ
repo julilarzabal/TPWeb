@@ -45,7 +45,7 @@ templ SignUpPanel() {
 }
 
 templ EventForm(users []sqlc.User) {
-	<form id="form-evento" method="post" action="/events">
+	<form id="form-evento" hx-post="/events" hx-target="#event-list" hx-swap="outerHTML">
 		<label>
 			Título
 			<input type="text" id="evento-titulo" name="title" required/>
@@ -92,7 +92,7 @@ templ EventPanel(users []sqlc.User) {
 }
 
 templ CategoryForm() {
-	<form id="form-categoria" method="post" action="/categories">
+	<form id="form-categoria" hx-post="/categories" hx-target="#category-list" hx-swap="outerHTML">
 		<label>
 			Nombre
 			<input type="text" id="categoria-nombre" name="name" placeholder="Ej.: Música" required/>

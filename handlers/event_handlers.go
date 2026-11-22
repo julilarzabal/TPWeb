@@ -8,6 +8,7 @@ import (
 	"time"
 
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
+	"TPEspecial.com/ProgramacionWeb/TPEspecial/views"
 )
 
 func (s *Server) CreateEventHandler(w http.ResponseWriter, r *http.Request) {
@@ -61,8 +62,13 @@ func (s *Server) CreateEventHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 5. Redirigir al usuario (Patrón PRG)
-	http.Redirect(w, r, "/", http.StatusSeeOther) // Esto es completamente correcto según el TP
+	// 5. Volver a consultar la lista y devolver solo ese fragmento (HTMX lo inserta en #event-list)
+	events, err := s.queries.ListEvents(r.Context())
+	if err != nil {
+		http.Error(w, "Error al obtener los eventos", http.StatusInternalServerError)
+		return
+	}
+	renderFragment(w, r, views.EventItems(events))
 }
 
 func (s *Server) ListEventsHandler(w http.ResponseWriter, r *http.Request) {

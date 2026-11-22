@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
+
+	"github.com/a-h/templ"
 
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 	"TPEspecial.com/ProgramacionWeb/TPEspecial/views"
@@ -46,5 +49,15 @@ func (s *Server) HandleIndex(w http.ResponseWriter, r *http.Request) {
 	err = component.Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, "Error al renderizar la página", http.StatusInternalServerError)
+	}
+}
+
+// renderFragment responde con un fragmento HTML (no una página completa)
+// para que HTMX lo inserte en el hx-target del formulario.
+func renderFragment(w http.ResponseWriter, r *http.Request, c templ.Component) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := c.Render(r.Context(), w); err != nil {
+		// La respuesta ya pudo haber empezado a enviarse: solo se registra el error.
+		log.Printf("error al renderizar fragmento: %v", err)
 	}
 }

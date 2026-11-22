@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
+	"TPEspecial.com/ProgramacionWeb/TPEspecial/views"
 )
 
 // CreateCategoryHandler procesa el POST del formulario
@@ -33,8 +34,13 @@ func (s *Server) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 5. Redirigir al usuario (Patrón PRG)
-	http.Redirect(w, r, "/", http.StatusSeeOther) // Esto es completamente correcto según el TP
+	// 5. Volver a consultar la lista y devolver solo ese fragmento (HTMX lo inserta en #category-list)
+	categories, err := s.queries.ListCategories(r.Context())
+	if err != nil {
+		http.Error(w, "Error al obtener las categorías", http.StatusInternalServerError)
+		return
+	}
+	renderFragment(w, r, views.CategoryItems(categories))
 }
 
 /*

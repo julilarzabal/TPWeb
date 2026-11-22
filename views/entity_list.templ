@@ -13,6 +13,28 @@ templ EventList(events []sqlc.Event, users []sqlc.User) {
 			</div>
 			@EventPanel(users)
 		</div>
+		@EventItems(events)
+	</section>
+}
+
+templ CategoryList(categories []sqlc.Category) {
+	<section class="seccion contenedor" id="categorias">
+		<div class="seccion-cabecera">
+			<div>
+				<p class="antetitulo">Explorá por tema</p>
+				<h2>Categories</h2>
+			</div>
+			@CategoryPanel()
+		</div>
+		@CategoryItems(categories)
+	</section>
+}
+
+// EventItems es el fragmento que HTMX reemplaza al crear un evento.
+// Siempre renderiza el contenedor #event-list (aunque no haya eventos)
+// para que hx-target lo encuentre.
+templ EventItems(events []sqlc.Event) {
+	<div id="event-list">
 		if len(events) == 0 {
 			<p class="vacio">Todavía no hay eventos. Publicá el primero con el botón Create Event.</p>
 		} else {
@@ -30,18 +52,12 @@ templ EventList(events []sqlc.Event, users []sqlc.User) {
 				}
 			</div>
 		}
-	</section>
+	</div>
 }
 
-templ CategoryList(categories []sqlc.Category) {
-	<section class="seccion contenedor" id="categorias">
-		<div class="seccion-cabecera">
-			<div>
-				<p class="antetitulo">Explorá por tema</p>
-				<h2>Categories</h2>
-			</div>
-			@CategoryPanel()
-		</div>
+// CategoryItems es el fragmento que HTMX reemplaza al crear una categoría.
+templ CategoryItems(categories []sqlc.Category) {
+	<div id="category-list">
 		if len(categories) == 0 {
 			<p class="vacio">Todavía no hay categorías. Creá la primera con el botón Create Category.</p>
 		} else {
@@ -51,5 +67,5 @@ templ CategoryList(categories []sqlc.Category) {
 				}
 			</ul>
 		}
-	</section>
+	</div>
 }

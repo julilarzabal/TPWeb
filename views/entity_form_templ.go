@@ -99,7 +99,7 @@ func EventForm(users []sqlc.User) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form id=\"form-evento\" method=\"post\" action=\"/events\"><label>Título <input type=\"text\" id=\"evento-titulo\" name=\"title\" required></label> <label>Descripción <textarea id=\"evento-descripcion\" name=\"description\" rows=\"3\" required></textarea></label> <label>Fecha <input type=\"date\" id=\"evento-fecha\" name=\"fecha\" required></label> <label>Lugar <input type=\"text\" id=\"evento-lugar\" name=\"location\" required></label> <label>Rango de edad <input type=\"text\" id=\"evento-rango-edad\" name=\"ageRange\" placeholder=\"Ej.: 18-65\" required></label> <label>Organizador <select id=\"creator-event\" name=\"creatorID\" required>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form id=\"form-evento\" hx-post=\"/events\" hx-target=\"#event-list\" hx-swap=\"outerHTML\"><label>Título <input type=\"text\" id=\"evento-titulo\" name=\"title\" required></label> <label>Descripción <textarea id=\"evento-descripcion\" name=\"description\" rows=\"3\" required></textarea></label> <label>Fecha <input type=\"date\" id=\"evento-fecha\" name=\"fecha\" required></label> <label>Lugar <input type=\"text\" id=\"evento-lugar\" name=\"location\" required></label> <label>Rango de edad <input type=\"text\" id=\"evento-rango-edad\" name=\"ageRange\" placeholder=\"Ej.: 18-65\" required></label> <label>Organizador <select id=\"creator-event\" name=\"creatorID\" required>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -203,7 +203,7 @@ func CategoryForm() templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<form id=\"form-categoria\" method=\"post\" action=\"/categories\"><label>Nombre <input type=\"text\" id=\"categoria-nombre\" name=\"name\" placeholder=\"Ej.: Música\" required></label> <button class=\"boton boton-azul\" type=\"submit\">Crear categoría</button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<form id=\"form-categoria\" hx-post=\"/categories\" hx-target=\"#category-list\" hx-swap=\"outerHTML\"><label>Nombre <input type=\"text\" id=\"categoria-nombre\" name=\"name\" placeholder=\"Ej.: Música\" required></label> <button class=\"boton boton-azul\" type=\"submit\">Crear categoría</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
