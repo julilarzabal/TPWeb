@@ -212,6 +212,8 @@ func (s *Server) DeleteEventHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 3. Responder con estado 204 No Content
-	w.WriteHeader(http.StatusNoContent)
+	// 3. Responder con estado 200 OK y cuerpo vacío.
+	// HTMX interpreta esta respuesta como "reemplazar el target por nada",
+	// lo que elimina el elemento de la vista.
+	w.WriteHeader(http.StatusOK)
 }

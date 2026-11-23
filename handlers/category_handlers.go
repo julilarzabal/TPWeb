@@ -150,6 +150,8 @@ func (s *Server) DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Cumplimos la consigna: Devolver estado 204 (No Content)
-	w.WriteHeader(http.StatusNoContent)
+	// Responder con estado 200 OK y cuerpo vacío.
+	// HTMX interpreta esta respuesta como "reemplazar el target por nada",
+	// lo que elimina el elemento de la vista.
+	w.WriteHeader(http.StatusOK)
 }
