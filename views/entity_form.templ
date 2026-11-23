@@ -1,6 +1,8 @@
 package views
 
 import (
+	"fmt"
+
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 )
 
@@ -46,38 +48,69 @@ templ SignUpPanel() {
 
 templ EventForm(users []sqlc.User) {
 	<form id="form-evento" hx-post="/events" hx-target="#event-list" hx-swap="outerHTML">
-		<label>
-			Título
-			<input type="text" id="evento-titulo" name="title" required/>
-		</label>
-		<label>
-			Descripción
+		@eventFormFields(users, "", nil, "", "", "", 0)
+		<button class="boton" type="submit">Publicar evento</button>
+	</form>
+}
+
+// EventEditForm reutiliza los mismos campos del formulario de creación,
+// precargados con los datos del evento que se quiere modificar.
+templ EventEditForm(event sqlc.Event, users []sqlc.User) {
+	<form
+		id="form-evento-edit"
+		class="evento-editando"
+		hx-put={ fmt.Sprintf("/events/%d", event.ID) }
+		hx-target="#event-list"
+		hx-swap="outerHTML"
+	>
+		<h3>Modificar evento</h3>
+		@eventFormFields(users, event.Title, event.Description, event.Fecha.Format("2006-01-02"), event.Location, event.AgeRange, event.CreatorID)
+		<div class="acciones-formulario">
+			<button class="boton" type="submit">Guardar cambios</button>
+			<a class="boton boton-azul" href="/#eventos">Cancelar</a>
+		</div>
+	</form>
+}
+
+templ eventFormFields(users []sqlc.User, title string, description *string, fecha, location, ageRange string, creatorID int32) {
+	<label>
+		Título
+		<input type="text" id="evento-titulo" name="title" value={ title } required/>
+	</label>
+	<label>
+		Descripción
+		if description != nil {
+			<textarea id="evento-descripcion" name="description" rows="3" required>{ *description }</textarea>
+		} else {
 			<textarea id="evento-descripcion" name="description" rows="3" required></textarea>
-		</label>
-		<label>
-			Fecha
-			<input type="date" id="evento-fecha" name="fecha" required/>
-		</label>
-		<label>
-			Lugar
-			<input type="text" id="evento-lugar" name="location" required/>
-		</label>
-		<label>
-			Rango de edad
-			<input type="text" id="evento-rango-edad" name="ageRange" placeholder="Ej.: 18-65" required/>
-		</label>
-		<label>
-			Organizador
-			<select id="creator-event" name="creatorID" required>
-				for _, user := range users {
-					if user.Role == "creator" {
+		}
+	</label>
+	<label>
+		Fecha
+		<input type="date" id="evento-fecha" name="fecha" value={ fecha } required/>
+	</label>
+	<label>
+		Lugar
+		<input type="text" id="evento-lugar" name="location" value={ location } required/>
+	</label>
+	<label>
+		Rango de edad
+		<input type="text" id="evento-rango-edad" name="ageRange" value={ ageRange } placeholder="Ej.: 18-65" required/>
+	</label>
+	<label>
+		Organizador
+		<select id="creator-event" name="creatorID" required>
+			for _, user := range users {
+				if user.Role == "creator" {
+					if user.ID == creatorID {
+						<option value={ user.ID } selected>{ user.Name }</option>
+					} else {
 						<option value={ user.ID }>{ user.Name }</option>
 					}
 				}
-			</select>
-		</label>
-		<button class="boton" type="submit">Publicar evento</button>
-	</form>
+			}
+		</select>
+	</label>
 }
 
 templ EventPanel(users []sqlc.User) {

@@ -73,6 +73,8 @@ func main() {
 	http.HandleFunc("POST /events", srv.CreateEventHandler)
 	http.HandleFunc("DELETE /events/{id}", srv.DeleteEventHandler)
 	http.HandleFunc("DELETE /categories/{id}", srv.DeleteCategoryHandler)
+	http.HandleFunc("GET /events/{id}/edit", srv.ShowEditEventFormHandler)
+	http.HandleFunc("PUT /events/{id}", srv.UpdateEventFormHandler)
 
 	// Servir los archivos estáticos (CSS, imágenes)
 	fs := http.FileServer(http.Dir("static"))

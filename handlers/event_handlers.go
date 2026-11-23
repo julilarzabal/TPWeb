@@ -71,6 +71,97 @@ func (s *Server) CreateEventHandler(w http.ResponseWriter, r *http.Request) {
 	renderFragment(w, r, views.EventItems(events))
 }
 
+// ShowEditEventFormHandler devuelve el formulario de edición precargado con
+// los datos del evento indicado. HTMX lo inserta en lugar de la tarjeta.
+func (s *Server) ShowEditEventFormHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 32)
+	if err != nil {
+		http.Error(w, "ID de evento inválido", http.StatusBadRequest)
+		return
+	}
+
+	event, err := s.queries.GetEvent(r.Context(), int32(id))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "Evento no encontrado", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Error en la base de datos", http.StatusInternalServerError)
+		return
+	}
+
+	users, err := s.queries.ListUsers(r.Context())
+	if err != nil {
+		http.Error(w, "Error al obtener los usuarios", http.StatusInternalServerError)
+		return
+	}
+
+	renderFragment(w, r, views.EventEditForm(event, users))
+}
+
+// UpdateEventFormHandler procesa el PUT del formulario de edición y devuelve
+// la lista de eventos actualizada para que HTMX reemplace #event-list.
+func (s *Server) UpdateEventFormHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 32)
+	if err != nil {
+		http.Error(w, "ID de evento inválido", http.StatusBadRequest)
+		return
+	}
+
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Error al procesar el formulario", http.StatusBadRequest)
+		return
+	}
+
+	title := r.FormValue("title")
+	descriptionStr := r.FormValue("description")
+	location := r.FormValue("location")
+	ageRange := r.FormValue("ageRange")
+	fechaStr := r.FormValue("fecha")
+	creatorID, err := strconv.ParseInt(r.FormValue("creatorID"), 10, 32)
+	if err != nil || creatorID <= 0 {
+		http.Error(w, "El ID del organizador debe ser un entero positivo", http.StatusBadRequest)
+		return
+	}
+
+	if title == "" || fechaStr == "" || location == "" {
+		http.Error(w, "Los campos 'title', 'fecha' y 'location' son obligatorios", http.StatusBadRequest)
+		return
+	}
+
+	fecha, err := time.Parse("2006-01-02", fechaStr)
+	if err != nil {
+		http.Error(w, "La fecha debe tener formato YYYY-MM-DD", http.StatusBadRequest)
+		return
+	}
+
+	var description *string
+	if descriptionStr != "" {
+		description = &descriptionStr
+	}
+
+	err = s.queries.UpdateEvent(r.Context(), sqlc.UpdateEventParams{
+		ID:          int32(id),
+		Title:       title,
+		Description: description,
+		Location:    location,
+		AgeRange:    ageRange,
+		CreatorID:   int32(creatorID),
+		Fecha:       fecha,
+	})
+	if err != nil {
+		http.Error(w, "Error al actualizar el evento", http.StatusInternalServerError)
+		return
+	}
+
+	events, err := s.queries.ListEvents(r.Context())
+	if err != nil {
+		http.Error(w, "Error al obtener los eventos", http.StatusInternalServerError)
+		return
+	}
+	renderFragment(w, r, views.EventItems(events))
+}
+
 func (s *Server) ListEventsHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. Obtener los registros mediante sqlc
 	/*

@@ -246,7 +246,8 @@ details.desplegable[open] > summary.boton {
   border-radius: 999px;
 }
 
-.boton-eliminar {
+.boton-eliminar,
+.boton-modificar {
   width: auto;
   margin: 0;
   padding: 0.25rem 0.75rem;
@@ -262,9 +263,42 @@ details.desplegable[open] > summary.boton {
   border-color: var(--pico-del-color);
 }
 
-.evento .boton-eliminar {
-  align-self: flex-start;
+.boton-modificar {
+  color: var(--pico-primary);
+  border-color: var(--pico-primary);
+}
+
+.boton-modificar:hover {
+  color: var(--pico-primary-inverse);
+  background: var(--pico-primary);
+  border-color: var(--pico-primary);
+}
+
+.evento .acciones-evento {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-top: auto;
+}
+
+.evento-editando {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  background: var(--pico-card-background-color);
+  border: 1px solid var(--pico-card-border-color);
+  border-radius: var(--pico-border-radius);
+}
+
+.acciones-formulario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.acciones-formulario .boton {
+  width: auto;
+  margin: 0;
 }
 
 /* Footer */

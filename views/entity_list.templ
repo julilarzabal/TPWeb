@@ -50,14 +50,23 @@ templ EventItems(events []sqlc.Event) {
 							<p>{ *event.Description }</p>
 						}
 						<p class="lugar">{ event.Location }</p>
-						<button
-							type="button"
-							class="boton-eliminar"
-							hx-delete={ fmt.Sprintf("/events/%d", event.ID) }
-							hx-target="closest article"
-							hx-swap="outerHTML"
-							hx-confirm="¿Eliminar este evento?"
-						>Delete</button>
+						<div class="acciones-evento">
+							<button
+								type="button"
+								class="boton-modificar"
+								hx-get={ fmt.Sprintf("/events/%d/edit", event.ID) }
+								hx-target="closest article"
+								hx-swap="outerHTML"
+							>Modify</button>
+							<button
+								type="button"
+								class="boton-eliminar"
+								hx-delete={ fmt.Sprintf("/events/%d", event.ID) }
+								hx-target="closest article"
+								hx-swap="outerHTML"
+								hx-confirm="¿Eliminar este evento?"
+							>Delete</button>
+						</div>
 					</article>
 				}
 			</div>
