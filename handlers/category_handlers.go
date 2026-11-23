@@ -150,18 +150,6 @@ func (s *Server) DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Si la petición viene de HTMX, devolver la lista actualizada para
-	// reemplazar #category-list sin recargar la página.
-	if r.Header.Get("HX-Request") == "true" {
-		categories, err := s.queries.ListCategories(r.Context())
-		if err != nil {
-			http.Error(w, "Error al obtener las categorías", http.StatusInternalServerError)
-			return
-		}
-		renderFragment(w, r, views.CategoryItems(categories))
-		return
-	}
-
 	// Cumplimos la consigna: Devolver estado 204 (No Content)
 	w.WriteHeader(http.StatusNoContent)
 }

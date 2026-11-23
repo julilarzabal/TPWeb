@@ -212,18 +212,6 @@ func (s *Server) DeleteEventHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 3. Si la petición viene de HTMX, devolver la lista actualizada para
-	// reemplazar #event-list sin recargar la página.
-	if r.Header.Get("HX-Request") == "true" {
-		events, err := s.queries.ListEvents(r.Context())
-		if err != nil {
-			http.Error(w, "Error al obtener los eventos", http.StatusInternalServerError)
-			return
-		}
-		renderFragment(w, r, views.EventItems(events))
-		return
-	}
-
-	// 4. Responder con estado 204 No Content para el resto de los clientes
+	// 3. Responder con estado 204 No Content
 	w.WriteHeader(http.StatusNoContent)
 }

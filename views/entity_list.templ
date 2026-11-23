@@ -54,7 +54,7 @@ templ EventItems(events []sqlc.Event) {
 							type="button"
 							class="boton-eliminar"
 							hx-delete={ fmt.Sprintf("/events/%d", event.ID) }
-							hx-target="#event-list"
+							hx-target="closest article"
 							hx-swap="outerHTML"
 							hx-confirm="¿Eliminar este evento?"
 						>Delete</button>
@@ -79,7 +79,7 @@ templ CategoryItems(categories []sqlc.Category) {
 							type="button"
 							class="boton-eliminar"
 							hx-delete={ fmt.Sprintf("/categories/%d", category.ID) }
-							hx-target="#category-list"
+							hx-target="closest li"
 							hx-swap="outerHTML"
 							hx-confirm="¿Eliminar esta categoría?"
 						>Delete</button>

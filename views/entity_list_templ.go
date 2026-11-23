@@ -231,7 +231,7 @@ func EventItems(events []sqlc.Event) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" hx-target=\"#event-list\" hx-swap=\"outerHTML\" hx-confirm=\"¿Eliminar este evento?\">Delete</button></article>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" hx-target=\"closest article\" hx-swap=\"outerHTML\" hx-confirm=\"¿Eliminar este evento?\">Delete</button></article>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -312,7 +312,7 @@ func CategoryItems(categories []sqlc.Category) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" hx-target=\"#category-list\" hx-swap=\"outerHTML\" hx-confirm=\"¿Eliminar esta categoría?\">Delete</button></li>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" hx-target=\"closest li\" hx-swap=\"outerHTML\" hx-confirm=\"¿Eliminar esta categoría?\">Delete</button></li>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
