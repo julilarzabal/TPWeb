@@ -1,6 +1,8 @@
 package views
 
 import (
+	"fmt"
+
 	sqlc "TPEspecial.com/ProgramacionWeb/TPEspecial/db/sqlc"
 )
 
@@ -48,6 +50,14 @@ templ EventItems(events []sqlc.Event) {
 							<p>{ *event.Description }</p>
 						}
 						<p class="lugar">{ event.Location }</p>
+						<button
+							type="button"
+							class="boton-eliminar"
+							hx-delete={ fmt.Sprintf("/events/%d", event.ID) }
+							hx-target="#event-list"
+							hx-swap="outerHTML"
+							hx-confirm="¿Eliminar este evento?"
+						>Delete</button>
 					</article>
 				}
 			</div>
@@ -63,7 +73,17 @@ templ CategoryItems(categories []sqlc.Category) {
 		} else {
 			<ul class="lista-categorias">
 				for _, category := range categories {
-					<li>{ category.Name }</li>
+					<li>
+						<span>{ category.Name }</span>
+						<button
+							type="button"
+							class="boton-eliminar"
+							hx-delete={ fmt.Sprintf("/categories/%d", category.ID) }
+							hx-target="#category-list"
+							hx-swap="outerHTML"
+							hx-confirm="¿Eliminar esta categoría?"
+						>Delete</button>
+					</li>
 				}
 			</ul>
 		}

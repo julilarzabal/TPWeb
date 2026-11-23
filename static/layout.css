@@ -237,10 +237,34 @@ details.desplegable[open] > summary.boton {
 }
 
 .lista-categorias li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   margin: 0;
   padding: 0.35rem 1rem;
   border: 1px solid var(--pico-muted-border-color);
   border-radius: 999px;
+}
+
+.boton-eliminar {
+  width: auto;
+  margin: 0;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--pico-del-color);
+  background: transparent;
+  border: 1px solid var(--pico-del-color);
+}
+
+.boton-eliminar:hover {
+  color: var(--pico-primary-inverse);
+  background: var(--pico-del-color);
+  border-color: var(--pico-del-color);
+}
+
+.evento .boton-eliminar {
+  align-self: flex-start;
+  margin-top: auto;
 }
 
 /* Footer */
