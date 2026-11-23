@@ -131,7 +131,13 @@ templ EventPanel(users []sqlc.User) {
 }
 
 templ CategoryForm() {
-	<form id="form-categoria" hx-post="/categories" hx-target="#category-list" hx-swap="outerHTML">
+	<form
+		id="form-categoria"
+		hx-post="/categories"
+		hx-target="#category-list"
+		hx-swap="outerHTML"
+		hx-on::after-request="if (event.detail.successful) this.closest('details').open = false"
+	>
 		<label>
 			Nombre
 			<input type="text" id="categoria-nombre" name="name" placeholder="Ej.: Música" required/>
