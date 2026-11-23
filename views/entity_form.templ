@@ -47,7 +47,13 @@ templ SignUpPanel() {
 }
 
 templ EventForm(users []sqlc.User) {
-	<form id="form-evento" hx-post="/events" hx-target="#event-list" hx-swap="outerHTML">
+	<form
+		id="form-evento"
+		hx-post="/events"
+		hx-target="#event-list"
+		hx-swap="outerHTML"
+		hx-on::after-request="if (event.detail.successful) this.closest('details').open = false"
+	>
 		@eventFormFields(users, "", nil, "", "", "", 0)
 		<button class="boton" type="submit">Publicar evento</button>
 	</form>
