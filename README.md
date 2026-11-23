@@ -81,20 +81,6 @@ La aplicación sigue una arquitectura **three‑tier**:
 
 **Inyección de dependencias:** `main.go` crea la conexión a la base, construye `sqlc.Queries` y lo inyecta en el `Server` de handlers mediante el constructor `handlers.NewServer(queries)`. Ningún handler abre conexiones por su cuenta.
 
-**Flujo de una petición con HTMX** (ejemplo: crear una categoría):
-
-```
-Navegador                 Servidor Go                 PostgreSQL
-   │  POST /categories (AJAX) │                            │
-   │─────────────────────────>│  CreateCategory(name)      │
-   │                          │───────────────────────────>│
-   │                          │  ListCategories()          │
-   │                          │───────────────────────────>│
-   │  <div id="category-list">│<───────────────────────────│
-   │<─────────────────────────│                            │
-   │ HTMX reemplaza #category-list (outerHTML)             │
-```
-
 #### 5. Estructura del proyecto
 
 ```
@@ -175,8 +161,6 @@ Las consultas se escriben en SQL plano en `db/queries/queries.sql` y sqlc genera
 | `eventFormFields` | `entity_form.templ` | Campos compartidos por la creación y la edición de eventos. |
 | `CategoryForm` / `CategoryPanel` | `entity_form.templ` | Creación de categorías con HTMX. |
 
-templ **escapa automáticamente** todo valor interpolado con `{ ... }`, por lo que los datos ingresados por los usuarios no pueden inyectar HTML ni scripts (protección contra XSS).
-
 #### 9. Interacción dinámica con HTMX
 
 **Creación sin recarga:**
@@ -230,47 +214,13 @@ La validación HTML5 (`required`) se mantiene: HTMX no envía el formulario si f
 | Componentes de lista | La lista estaba dentro de la sección junto al formulario | La lista es un componente propio con un `id` fijo |
 | JavaScript propio | Ninguno | Ninguno (solo atributos HTMX) |
 
-
-#### 11. Pruebas
-
-**Pruebas automatizadas** (`tests/db_test.go`), de integración contra la base de datos. Requieren la base levantada y el código de sqlc generado:
-- `TestUserCRUD`: crear, obtener, listar, actualizar y eliminar usuarios.
-- `TestEventCRUD`: el mismo ciclo para eventos.
-
-**Pruebas con curl:** `requests.bash` contiene peticiones para endpoints JSON cuyos handlers siguen en `handlers/`, pero que actualmente no están registrados en `main.go`.
-
-**Pruebas manuales de la interfaz** (herramientas de desarrollo del navegador, pestaña **Network**, filtro **Fetch/XHR**, opción **Preserve log**):
-
-| # | Caso | Resultado esperado |
-|---|---|---|
-| 1 | Consola: `htmx.version` | Devuelve `"1.9.10"`. |
-| 2 | Crear una categoría | `POST /categories` → 200; la respuesta es solo `<div id="category-list">`; la categoría aparece en la lista; la página no se recarga. |
-| 3 | Registrar un usuario con rol **Organizador de eventos** | La página se recarga (envío tradicional) y el organizador aparece en el selector del formulario de eventos. |
-| 4 | Crear un evento | `POST /events` → 200; el evento aparece en la lista sin recargar. |
-| 5 | Enviar un formulario con campos vacíos | El navegador bloquea el envío; no se genera ninguna petición. |
-| 6 | Borrar un evento o categoría y confirmar | Diálogo de confirmación; `DELETE` → 200 con cuerpo vacío; el elemento desaparece. |
-| 7 | Borrar y cancelar el diálogo | No se envía ninguna petición. |
-| 8 | Modificar un evento | La tarjeta se reemplaza por el formulario precargado; al guardar, `PUT /events/{id}` → 200 y la lista se actualiza. |
-
-#### 12. Decisiones de diseño
-
-1. **Componentes de fragmento separados (`EventItems`, `CategoryItems`).** El formulario de creación está dentro de la misma sección que la lista; si el objetivo fuera la sección completa, HTMX también reemplazaría el formulario. Separar la lista permite devolver solo lo necesario y que el fragmento reciba únicamente los datos que usa (por ejemplo, `EventItems` no necesita la lista de usuarios).
-2. **Contenedor siempre presente.** El `<div id="...">` se renderiza aun cuando la lista está vacía, para que `hx-target` lo encuentre también en la primera creación.
-3. **`outerHTML` en lugar de `beforeend`.** El servidor devuelve la lista completa consultada desde la base, lo que garantiza que la vista refleje el estado real. Con `beforeend` se duplicarían los elementos.
-4. **Usuarios sin HTMX.** La página no muestra una lista de usuarios, por lo que no hay un fragmento que actualizar. Además, crear un organizador debe actualizar el selector del formulario de eventos; la recarga completa lo resuelve de forma simple.
-5. **`200 OK` en los `DELETE`.** HTMX 1.9 no realiza el intercambio ante una respuesta `204 No Content`, por lo que el elemento no desaparecería.
-6. **`renderFragment` centralizado.** Evita duplicar el renderizado en cada handler y unifica el manejo del error de renderizado.
-7. **Archivos generados fuera del repositorio.** El código de templ y sqlc se regenera en cada `make run` a partir de las fuentes (`.templ` y `.sql`), evitando inconsistencias entre la fuente y el código generado.
-
-#### 13. Conclusiones
+#### 11. Conclusiones
 
 HTMX permite que una aplicación renderizada íntegramente en el servidor ofrezca una interfaz que se siente como una SPA, sin escribir JavaScript propio. El servidor sigue siendo la única fuente de verdad: genera el HTML y la base de datos determina qué se muestra, mientras que HTMX solo decide **dónde** colocar cada fragmento.
 
 La clave está en la organización de los componentes: separar las listas en fragmentos con identificadores fijos fue lo que hizo posible actualizar partes de la página de forma precisa. Las validaciones se mantienen en el servidor, el acceso a datos y las vistas son código tipado generado por sqlc y templ, y templ brinda protección contra XSS.
 
-Como trabajo futuro, los puntos más relevantes son el manejo visible de errores, la seguridad de las operaciones de escritura y el desacoplamiento de los handlers respecto de la capa de datos.
-
-#### 14. Referencias
+#### 12. Referencias
 
 - Documentación de HTMX: <https://htmx.org/docs/>
 - Ejemplos de HTMX (Out‑of‑Band Swaps): <https://htmx.org/examples/update-other-content/#oob>
